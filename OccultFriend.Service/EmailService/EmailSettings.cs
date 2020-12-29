@@ -23,12 +23,14 @@ namespace OccultFriend.Service.EmailService
             {
                 try
                 {
-                    var mailMessage = new MailMessage();
-                    // Remetente
-                    mailMessage.From = new MailAddress(emailSettings.Username);
+                    var mailMessage = new MailMessage
+                    {
+                        // Remetente
+                        From = new MailAddress(emailSettings.Username)
+                    };
 
-                    //Contrói o MailMessage
-                    if(friendEmail != null)
+                    //Constrói o MailMessage
+                    if (friendEmail != null)
                     {
                         mailMessage.CC.Add(friendEmail);
                     }

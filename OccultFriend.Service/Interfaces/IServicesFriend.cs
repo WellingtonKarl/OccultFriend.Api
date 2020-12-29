@@ -9,6 +9,6 @@ namespace OccultFriend.Service.Interfaces
 {
     public interface IServicesFriend
     {
-        Task Draw(EmailSettings emailSettings);
+        Task Draw();
     }
 }

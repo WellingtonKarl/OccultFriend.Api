@@ -34,7 +34,7 @@ namespace OccultFriend.Service.FriendServices
             _random = new Random();
         }
 
-        public async Task Draw(EmailSettings emailSettings)
+        public async Task Draw()
         {
             Friends = _repositoriesFriend.GetAll().Select(x => new FriendDTO { Name = x.Name, Description = x.Description, Email = x.Email }).ToList();
             var emails = Friends.Select(x => x.Email).ToArray();
@@ -53,13 +53,13 @@ namespace OccultFriend.Service.FriendServices
 
             if (ehRepeat == true)
             {
-                await _emailService.BodyEmailAdmin(Names, emailSettings);
+                await _emailService.BodyEmailAdmin(Names);
             }
 
             if (ehRepeat == false)
             {
-                await Responsible(emailSettings);   // <==== Esse método é familiar, caso precise fazer algum teste comente este método.
-                await _emailService.BodyEmail(Friends, emailSettings);
+                //await Responsible();   // <==== Esse método é familiar, caso precise fazer algum teste comente este método.
+                await _emailService.BodyEmail(Friends);
             }
         }
 
@@ -99,7 +99,7 @@ namespace OccultFriend.Service.FriendServices
         // Esse método é apenas familiar, caso for fazer algum teste irá estourar uma exceção!
         // Foi criado esse método para crianças que não possuem email, criei um email Alternativo para os dois responsáveis.
         // To-Do ---- Ainda terei que implementar melhorias.
-        private async Task Responsible(EmailSettings emailSettings)
+        private async Task Responsible()
         {
             try
             {
@@ -128,7 +128,7 @@ namespace OccultFriend.Service.FriendServices
                 var winnerAndResponsible = winner.Zip(responsible, (w, f) => new { Winner = w, Friend = f });
                 foreach (var wr in winnerAndResponsible)
                 {
-                    await _emailService.BodyEmailResponsible(wr.Winner, wr.Friend, emailSettings);
+                    await _emailService.BodyEmailResponsible(wr.Winner, wr.Friend);
                 }
             }
             catch (Exception ex)

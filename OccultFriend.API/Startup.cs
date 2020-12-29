@@ -30,11 +30,11 @@ namespace OccultFriend.API
         public void ConfigureServices(IServiceCollection services)
         {
             var connection = new SqlConnection(Configuration.GetConnectionString("connection"));
-            services.AddSingleton(Configuration.GetSection("EmailSettings").Get<EmailSettings>());
+            //services.AddSingleton(Configuration.GetSection("EmailSettings").Get<EmailSettings>());
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddScoped<IEmailService, EmailServices>();
+            services.AddScoped<IEmailService, EmailServices>(_ => new EmailServices(Configuration.GetSection("EmailSettings").Get<EmailSettings>()));
             services.AddScoped<IServicesFriend, ServicesFriend>();
             services.AddScoped<IEmailTemplate, EmailTemplate>();
             services.AddScoped<IRepositoriesFriend, RepositoriesFriend>(_ => new RepositoriesFriend(connection));

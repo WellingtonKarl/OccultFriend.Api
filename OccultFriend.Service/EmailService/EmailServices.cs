@@ -15,17 +15,23 @@ namespace OccultFriend.Service.EmailService
 {
     public class EmailServices : IEmailService
     {
-        private readonly IEmailTemplate _emailTemplate;
+        private EmailSettings _emailSettings;
         private const string DrawEmailTemplate = "DrawEmailTemplate";
         private const string DrawnDuplicateEmailTemplate = "DrawnDuplicateEmailTemplate";
         private const string ResponsibleEmailTemplate = "ResponsibleEmailTemplate";
-
-        public EmailServices(IEmailTemplate emailTemplate)
+        private IEmailTemplate _emailTemplate;
+        private IEmailTemplate EmailTemplate
         {
-            _emailTemplate = emailTemplate;
+            get => _emailTemplate ?? (_emailTemplate = new EmailTemplate());
+            set => _emailTemplate = value;
         }
 
-        public async Task BodyEmail(IEnumerable<FriendDTO> friends, EmailSettings emailSettings)
+        public EmailServices(EmailSettings emailSettings)
+        {
+            _emailSettings = emailSettings;
+        }
+
+        public async Task BodyEmail(IEnumerable<FriendDTO> friends)
         {
             foreach (var friend in friends)
             {
@@ -35,13 +41,13 @@ namespace OccultFriend.Service.EmailService
                     Date = DateTime.Now
                 };
 
-                var html = _emailTemplate.GenerateTemplateDrawEmail(DrawEmailTemplate, viewModel);
+                var html = EmailTemplate.GenerateTemplateDrawEmail(DrawEmailTemplate, viewModel);
 
-                await emailSettings.SendEmail(emailSettings, friend.Email, await html);
+                await _emailSettings.SendEmail(_emailSettings, friend.Email, await html);
             }
         }
 
-        public async Task BodyEmailAdmin(HashSet<string> names, EmailSettings emailSettings)
+        public async Task BodyEmailAdmin(HashSet<string> names)
         {
             var viewModel = new
             {
@@ -49,12 +55,12 @@ namespace OccultFriend.Service.EmailService
                 Date = DateTime.Now
             };
 
-            var html = _emailTemplate.GenerateTemplateDrawEmail(DrawnDuplicateEmailTemplate, viewModel);
+            var html = EmailTemplate.GenerateTemplateDrawEmail(DrawnDuplicateEmailTemplate, viewModel);
 
-            await emailSettings.SendEmail(emailSettings, null, await html);
+            await _emailSettings.SendEmail(_emailSettings, null, await html);
         }
 
-        public async Task BodyEmailResponsible(FriendDTO namesDescription, FriendDTO friend, EmailSettings emailSettings)
+        public async Task BodyEmailResponsible(FriendDTO namesDescription, FriendDTO friend)
         {
             var position = namesDescription.Name.IndexOf(",");
             var viewModel = new
@@ -67,9 +73,9 @@ namespace OccultFriend.Service.EmailService
                 Date = DateTime.Now
             };
 
-            var html = _emailTemplate.GenerateTemplateDrawEmail(ResponsibleEmailTemplate, viewModel);
+            var html = EmailTemplate.GenerateTemplateDrawEmail(ResponsibleEmailTemplate, viewModel);
 
-            await emailSettings.SendEmail(emailSettings, friend.Email, await html);
+            await _emailSettings.SendEmail(_emailSettings, friend.Email, await html);
         }
     }
 }

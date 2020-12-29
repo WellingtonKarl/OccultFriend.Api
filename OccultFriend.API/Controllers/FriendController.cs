@@ -18,26 +18,24 @@ namespace OccultFriend.API.Controllers
     public class FriendController : ControllerBase
     {
         private IRepositoriesFriend _repositoriesFriend;
-        private EmailSettings _emailSettings;
         private IServicesFriend _friendService;
 
-        public FriendController(IRepositoriesFriend repositoriesFriend, EmailSettings emailSettings, IServicesFriend friendService)
+        public FriendController(IRepositoriesFriend repositoriesFriend, IServicesFriend friendService)
         {
             _repositoriesFriend = repositoriesFriend;
-            _emailSettings = emailSettings;
             _friendService = friendService;
         }
         /// <summary>
-        /// Faz o Sorteio e envia os emails para os amigos sorteados.
+        /// Recupera todos que estão participando
         /// </summary>
         /// <returns></returns>
         // GET: api/<FriendController>
         [HttpGet]
-        public async Task<IActionResult> GetAndDraw()
+        public IActionResult Get()
         {
-            await _friendService.Draw(_emailSettings);
+            var friends =  _repositoriesFriend.GetAll();
 
-            return Ok("Email com os amigos sorteados com sucesso!");
+            return Ok(friends);
         }
 
         /// <summary>
@@ -64,6 +62,19 @@ namespace OccultFriend.API.Controllers
         {
             _repositoriesFriend.Create(friend);
             return Ok();
+        }
+
+        /// <summary>
+        /// Sorteia os Amigos
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("Draw")]
+        public async Task<IActionResult> Draw()
+        {
+            await _friendService.Draw();
+
+            return Ok("Email com os amigos sorteados com sucesso!");
         }
 
         /// <summary>
