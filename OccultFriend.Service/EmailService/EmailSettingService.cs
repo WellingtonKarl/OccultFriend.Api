@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OccultFriend.Domain.Model;
+using OccultFriend.Service.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Net;
@@ -8,16 +10,15 @@ using System.Threading.Tasks;
 
 namespace OccultFriend.Service.EmailService
 {
-    public class EmailSettings
+    public class EmailSettingService : IEmailSettingService
     {
-        public string HostName { get; set; }
-        public string Username { get; set; }
-        public string UserAdmin { get; set; }
-        public string Password { get; set; }
-        public int Port { get; set; }
-        public bool UseSSL { get; set; }
+        private EmailSetting _emailSettingDto;
+        public EmailSettingService(EmailSetting emailSettingDto)
+        {
+            _emailSettingDto = emailSettingDto;
+        }
 
-        public async Task SendEmail(EmailSettings emailSettings, string friendEmail, string html)
+        public async Task SendEmail(string friendEmail, string html)
         {
             using (var smtp = new SmtpClient())
             {
@@ -26,7 +27,7 @@ namespace OccultFriend.Service.EmailService
                     var mailMessage = new MailMessage
                     {
                         // Remetente
-                        From = new MailAddress(emailSettings.Username)
+                        From = new MailAddress(_emailSettingDto.Username)
                     };
 
                     //Constrói o MailMessage
@@ -36,7 +37,7 @@ namespace OccultFriend.Service.EmailService
                     }
                     else
                     {
-                        mailMessage.CC.Add(emailSettings.UserAdmin);
+                        mailMessage.CC.Add(_emailSettingDto.UserAdmin);
                     }
 
                     mailMessage.Subject = "Testando Email para o App Amigo oculto da família.";
@@ -44,13 +45,13 @@ namespace OccultFriend.Service.EmailService
                     mailMessage.Body = html;
 
                     //CONFIGURAÇÃO COM PORTA
-                    var _smtpClient = new SmtpClient(emailSettings.HostName, emailSettings.Port)
+                    var _smtpClient = new SmtpClient(_emailSettingDto.HostName, _emailSettingDto.Port)
                     {
                         // Credencial para envio por SMTP Seguro (Quando o servidor exige autenticação)
                         UseDefaultCredentials = false,
-                        Credentials = new NetworkCredential(emailSettings.Username, emailSettings.Password),
+                        Credentials = new NetworkCredential(_emailSettingDto.Username, _emailSettingDto.Password),
 
-                        EnableSsl = emailSettings.UseSSL
+                        EnableSsl = _emailSettingDto.UseSSL
                     };
 
                     await _smtpClient.SendMailAsync(mailMessage);

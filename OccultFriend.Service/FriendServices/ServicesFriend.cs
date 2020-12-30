@@ -51,14 +51,11 @@ namespace OccultFriend.Service.FriendServices
 
             var ehRepeat = ValidationRepeatDrawn();
 
-            if (ehRepeat == true)
-            {
+            if (ehRepeat)
                 await _emailService.BodyEmailAdmin(Names);
-            }
-
-            if (ehRepeat == false)
+            else
             {
-                //await Responsible();   // <==== Esse método é familiar, caso precise fazer algum teste comente este método.
+                await Responsible();
                 await _emailService.BodyEmail(Friends);
             }
         }
@@ -67,13 +64,18 @@ namespace OccultFriend.Service.FriendServices
         {
             for (int index = emails.Length; index > 1; index--)
             {
-                int shuffle = _random.Next(index);
-                int indexRandom = _random.Next(shuffle); //Embaralha mais uma vez para garantir que não irá repetir o mesmo participante.
+                int shuffle = MethodRandom(index);
+                int indexRandom = MethodRandom(shuffle); //Embaralha mais uma vez para garantir que não irá repetir o mesmo participante.
 
                 T email = emails[indexRandom];
                 emails[indexRandom] = emails[index - 1];
                 emails[index - 1] = email;
             }
+        }
+
+        private int MethodRandom(int index)
+        {
+            return _random.Next(index);
         }
 
         private bool ValidationRepeatDrawn()
@@ -95,8 +97,6 @@ namespace OccultFriend.Service.FriendServices
             return  repeat;
         }
 
-
-        // Esse método é apenas familiar, caso for fazer algum teste irá estourar uma exceção!
         // Foi criado esse método para crianças que não possuem email, criei um email Alternativo para os dois responsáveis.
         // To-Do ---- Ainda terei que implementar melhorias.
         private async Task Responsible()

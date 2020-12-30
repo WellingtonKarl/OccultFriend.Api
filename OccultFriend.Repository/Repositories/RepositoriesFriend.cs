@@ -24,7 +24,7 @@ namespace OccultFriend.Repository.Repositories
 
         public void Create(Friend friend)
         {
-            var sql = $"Insert Into Friends (Name, Description, Email)  Values('{friend.Name}', '{friend.Description}', '{friend.Email}')";
+            var sql = $"Insert Into Friends (Name, Description, Email, EhCrianca)  Values('{friend.Name}', '{friend.Description}', '{friend.Email}', '{friend.EhCrianca}')";
             _sqlConnection.Query<Friend>(sql);
         }
 
@@ -46,7 +46,7 @@ namespace OccultFriend.Repository.Repositories
 
         public IEnumerable<FriendDTO> Childdrens()
         {
-            var sql = "Select * from Friends where Id in (11, 12)";
+            var sql = "Select * from Friends where EhCrianca = 1";
             var friends = _sqlConnection.Query<FriendDTO>(sql);
 
             return friends;
@@ -59,7 +59,8 @@ namespace OccultFriend.Repository.Repositories
             {
                 Name = !string.IsNullOrEmpty(friend.Name) ? friend.Name : friendSelected.Name,
                 Description = !string.IsNullOrEmpty(friend.Description) ? friend.Description : friendSelected.Description,
-                Email = !string.IsNullOrEmpty(friend.Email) ? friend.Email : friendSelected.Email
+                Email = !string.IsNullOrEmpty(friend.Email) ? friend.Email : friendSelected.Email,
+                EhCrianca = friend.EhCrianca != friendSelected.EhCrianca ? friend.EhCrianca : friendSelected.EhCrianca
             };
 
             var sql = $"Update Friends Set Name = '{criterion.Name}', Description = '{criterion.Description}', Email = '{criterion.Email}' Where Id = {id}";

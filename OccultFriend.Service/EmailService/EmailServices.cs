@@ -15,20 +15,16 @@ namespace OccultFriend.Service.EmailService
 {
     public class EmailServices : IEmailService
     {
-        private EmailSettings _emailSettings;
         private const string DrawEmailTemplate = "DrawEmailTemplate";
         private const string DrawnDuplicateEmailTemplate = "DrawnDuplicateEmailTemplate";
         private const string ResponsibleEmailTemplate = "ResponsibleEmailTemplate";
-        private IEmailTemplate _emailTemplate;
-        private IEmailTemplate EmailTemplate
-        {
-            get => _emailTemplate ?? (_emailTemplate = new EmailTemplate());
-            set => _emailTemplate = value;
-        }
+        private readonly IEmailTemplate _emailTemplate;
+        private readonly IEmailSettingService _emailSettingService;
 
-        public EmailServices(EmailSettings emailSettings)
+        public EmailServices(IEmailTemplate emailTemplate, IEmailSettingService emailSettingService)
         {
-            _emailSettings = emailSettings;
+            _emailTemplate = emailTemplate;
+            _emailSettingService = emailSettingService;
         }
 
         public async Task BodyEmail(IEnumerable<FriendDTO> friends)
@@ -41,9 +37,9 @@ namespace OccultFriend.Service.EmailService
                     Date = DateTime.Now
                 };
 
-                var html = EmailTemplate.GenerateTemplateDrawEmail(DrawEmailTemplate, viewModel);
+                var html = _emailTemplate.GenerateTemplateDrawEmail(DrawEmailTemplate, viewModel);
 
-                await _emailSettings.SendEmail(_emailSettings, friend.Email, await html);
+                await _emailSettingService.SendEmail(friend.Email, await html);
             }
         }
 
@@ -55,9 +51,9 @@ namespace OccultFriend.Service.EmailService
                 Date = DateTime.Now
             };
 
-            var html = EmailTemplate.GenerateTemplateDrawEmail(DrawnDuplicateEmailTemplate, viewModel);
+            var html = _emailTemplate.GenerateTemplateDrawEmail(DrawnDuplicateEmailTemplate, viewModel);
 
-            await _emailSettings.SendEmail(_emailSettings, null, await html);
+            await _emailSettingService.SendEmail(null, await html);
         }
 
         public async Task BodyEmailResponsible(FriendDTO namesDescription, FriendDTO friend)
@@ -73,9 +69,9 @@ namespace OccultFriend.Service.EmailService
                 Date = DateTime.Now
             };
 
-            var html = EmailTemplate.GenerateTemplateDrawEmail(ResponsibleEmailTemplate, viewModel);
+            var html = _emailTemplate.GenerateTemplateDrawEmail(ResponsibleEmailTemplate, viewModel);
 
-            await _emailSettings.SendEmail(_emailSettings, friend.Email, await html);
+            await _emailSettingService.SendEmail(friend.Email, await html);
         }
     }
 }

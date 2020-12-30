@@ -58,7 +58,7 @@ namespace OccultFriend.API.Controllers
         /// <returns></returns>
         // POST api/<FriendController>
         [HttpPost]
-        public ActionResult Post([FromBody] Friend friend)
+        public ActionResult Post([FromForm] Friend friend)
         {
             _repositoriesFriend.Create(friend);
             return Ok();
@@ -84,15 +84,17 @@ namespace OccultFriend.API.Controllers
         /// <param name="name"></param>
         /// <param name="description"></param>
         /// <param name="email"></param>
+        /// <param name="ehCrianca"></param>
         // PUT api/<FriendController>/5
         [HttpPut("{id}")]
-        public void Put(int id, string name, string description, string email)
+        public void Put(int id, string name, string description, string email, bool ehCrianca)
         {
             var friend = new Friend
             {
                 Name = name,
                 Description = description,
-                Email = email
+                Email = email,
+                EhCrianca = ehCrianca
             };
 
             _repositoriesFriend.Update(friend, id);
