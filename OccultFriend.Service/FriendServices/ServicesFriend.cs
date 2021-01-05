@@ -34,7 +34,7 @@ namespace OccultFriend.Service.FriendServices
             _random = new Random();
         }
 
-        public async Task Draw()
+        public async Task Draw(bool childPlay)
         {
             Friends = _repositoriesFriend.GetAll().Select(x => new FriendDTO { Name = x.Name, Description = x.Description, Email = x.Email }).ToList();
             var emails = Friends.Select(x => x.Email).ToArray();
@@ -55,7 +55,7 @@ namespace OccultFriend.Service.FriendServices
                 await _emailService.BodyEmailAdmin(Names);
             else
             {
-                await Responsible();
+                await Responsible(childPlay);
                 await _emailService.BodyEmail(Friends);
             }
         }
@@ -85,11 +85,11 @@ namespace OccultFriend.Service.FriendServices
 
             foreach (var friend in friends)
             {
-                var name = Friends.First(x => x.Email.Equals(friend.Email));
+                var friendRepeat = Friends.First(x => x.Email.Equals(friend.Email));
 
-                if (friend.Email == name.Email && friend.Name == name.Name)
+                if (friend.Email == friendRepeat.Email && friend.Name == friendRepeat.Name)
                 {
-                    Names.Add(name.Name);
+                    Names.Add(friendRepeat.Name);
                     repeat = true;
                 }
             }
@@ -99,42 +99,58 @@ namespace OccultFriend.Service.FriendServices
 
         // Foi criado esse método para crianças que não possuem email, criei um email Alternativo para os dois responsáveis.
         // To-Do ---- Ainda terei que implementar melhorias.
-        private async Task Responsible()
+        private async Task Responsible(bool childWillPlay)
         {
             try
             {
-                var winner = new List<FriendDTO>();
-                var responsible = new List<FriendDTO>();
-                var childs = _repositoriesFriend.Childdrens();
-
-                foreach (var child in childs)
+                if (childWillPlay)
                 {
-                    var name = Friends.First(x => x.Email.Equals(child.Email));
-                    winner.Add(new FriendDTO
+                    var childs = _repositoriesFriend.Childdrens();
+
+                    var winner = Winner(childs);
+                    var responsible = Responsible(childs);
+
+                    var winnerAndResponsible = winner.Zip(responsible, (w, f) => new { Winner = w, Friend = f });
+                    foreach (var wr in winnerAndResponsible)
                     {
-                        Name = string.Concat(name.Name, ", ", child.Name),
-                        Description = name.Description
-                    });
-                    Friends.Remove(name);
-                }
-
-                foreach (var email in childs)
-                {
-                    var friend = Friends.First(x => x.Email.Equals(email.Email));
-                    responsible.Add(friend);
-                    Friends.Remove(friend);
-                }
-
-                var winnerAndResponsible = winner.Zip(responsible, (w, f) => new { Winner = w, Friend = f });
-                foreach (var wr in winnerAndResponsible)
-                {
-                    await _emailService.BodyEmailResponsible(wr.Winner, wr.Friend);
+                        await _emailService.BodyEmailResponsible(wr.Winner, wr.Friend);
+                    }
                 }
             }
             catch (Exception ex)
             {
                 new Exception(ex.Message);
             }
+        }
+
+        private List<FriendDTO> Winner(IEnumerable<FriendDTO> childs)
+        {
+            var winner = new List<FriendDTO>();
+            foreach (var child in childs)
+            {
+                var friendName = Friends.First(x => x.Email.Equals(child.Email));
+                winner.Add(new FriendDTO
+                {
+                    Name = string.Concat(friendName.Name, ", ", child.Name),
+                    Description = friendName.Description
+                });
+                Friends.Remove(friendName);
+            }
+
+            return winner;
+        }
+
+        private List<FriendDTO> Responsible(IEnumerable<FriendDTO> childs)
+        {
+            var responsible = new List<FriendDTO>();
+            foreach (var email in childs)
+            {
+                var friend = Friends.First(x => x.Email.Equals(email.Email));
+                responsible.Add(friend);
+                Friends.Remove(friend);
+            }
+
+            return responsible;
         }
     }
 }

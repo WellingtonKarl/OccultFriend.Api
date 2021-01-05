@@ -70,9 +70,9 @@ namespace OccultFriend.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("Draw")]
-        public async Task<IActionResult> Draw()
+        public async Task<IActionResult> Draw([FromForm] bool childPlay)
         {
-            await _friendService.Draw();
+            await _friendService.Draw(childPlay);
 
             return Ok("Email com os amigos sorteados com sucesso!");
         }

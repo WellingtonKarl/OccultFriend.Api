@@ -55,7 +55,7 @@ namespace OccultFriend.Repository.Repositories
         public void Update(Friend friend, int id)
         {
             var friendSelected = Get(id);
-            var criterion = new Friend
+            var criterion = new
             {
                 Name = !string.IsNullOrEmpty(friend.Name) ? friend.Name : friendSelected.Name,
                 Description = !string.IsNullOrEmpty(friend.Description) ? friend.Description : friendSelected.Description,
