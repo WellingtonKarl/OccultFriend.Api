@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using OccultFriend.Domain.IRepositories;
+using OccultFriend.Domain.Model;
 using OccultFriend.Repository.Repositories;
 using OccultFriend.Service.EmailService;
 using OccultFriend.Service.FriendServices;
@@ -29,15 +30,13 @@ namespace OccultFriend.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connection = new SqlConnection(Configuration.GetConnectionString("connection"));
-            services.AddSingleton(Configuration.GetSection("EmailSettings").Get<EmailSettings>());
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+            services.AddScoped<IEmailSettingService, EmailSettingService>(_ => new EmailSettingService(Configuration.GetSection("EmailSettings").Get<EmailSetting>()));
+            services.AddScoped<IRepositoriesFriend, RepositoriesFriend>(_ => new RepositoriesFriend(new SqlConnection(Configuration.GetConnectionString("connection"))));
             services.AddScoped<IEmailService, EmailServices>();
             services.AddScoped<IServicesFriend, ServicesFriend>();
             services.AddScoped<IEmailTemplate, EmailTemplate>();
-            services.AddScoped<IRepositoriesFriend, RepositoriesFriend>(_ => new RepositoriesFriend(connection));
 
             services.AddSwaggerGen(c =>
             {
@@ -50,7 +49,7 @@ namespace OccultFriend.API
                         Contact = new OpenApiContact
                         {
                             Name = "Wellington Karl",
-                            Url = new Uri("https://github.com/tottywell")
+                            Url = new Uri("https://github.com/WellingtonKarl")
                         }
 
                     });

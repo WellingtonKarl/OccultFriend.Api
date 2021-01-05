@@ -18,26 +18,24 @@ namespace OccultFriend.API.Controllers
     public class FriendController : ControllerBase
     {
         private IRepositoriesFriend _repositoriesFriend;
-        private EmailSettings _emailSettings;
         private IServicesFriend _friendService;
 
-        public FriendController(IRepositoriesFriend repositoriesFriend, EmailSettings emailSettings, IServicesFriend friendService)
+        public FriendController(IRepositoriesFriend repositoriesFriend, IServicesFriend friendService)
         {
             _repositoriesFriend = repositoriesFriend;
-            _emailSettings = emailSettings;
             _friendService = friendService;
         }
         /// <summary>
-        /// Faz o Sorteio e envia os emails para os amigos sorteados.
+        /// Recupera todos que estão participando
         /// </summary>
         /// <returns></returns>
         // GET: api/<FriendController>
         [HttpGet]
-        public async Task<IActionResult> GetAndDraw()
+        public IActionResult Get()
         {
-            await _friendService.Draw(_emailSettings);
+            var friends =  _repositoriesFriend.GetAll();
 
-            return Ok("Email com os amigos sorteados com sucesso!");
+            return Ok(friends);
         }
 
         /// <summary>
@@ -60,10 +58,23 @@ namespace OccultFriend.API.Controllers
         /// <returns></returns>
         // POST api/<FriendController>
         [HttpPost]
-        public ActionResult Post([FromBody] Friend friend)
+        public ActionResult Post([FromForm] Friend friend)
         {
             _repositoriesFriend.Create(friend);
             return Ok();
+        }
+
+        /// <summary>
+        /// Sorteia os Amigos
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("Draw")]
+        public async Task<IActionResult> Draw([FromForm] bool childPlay)
+        {
+            await _friendService.Draw(childPlay);
+
+            return Ok("Email com os amigos sorteados com sucesso!");
         }
 
         /// <summary>
@@ -73,15 +84,17 @@ namespace OccultFriend.API.Controllers
         /// <param name="name"></param>
         /// <param name="description"></param>
         /// <param name="email"></param>
+        /// <param name="ehCrianca"></param>
         // PUT api/<FriendController>/5
         [HttpPut("{id}")]
-        public void Put(int id, string name, string description, string email)
+        public void Put(int id, string name, string description, string email, bool ehCrianca)
         {
             var friend = new Friend
             {
                 Name = name,
                 Description = description,
-                Email = email
+                Email = email,
+                EhCrianca = ehCrianca
             };
 
             _repositoriesFriend.Update(friend, id);

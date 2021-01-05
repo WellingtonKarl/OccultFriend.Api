@@ -8,10 +8,8 @@ namespace OccultFriend.Service.Interfaces
 {
     public interface IEmailService
     {
-        Task BodyEmail(IEnumerable<FriendDTO> friends, EmailSettings emailSettings);
-
-        Task BodyEmailAdmin(HashSet<string> names, EmailSettings emailSettings);
-
-        Task BodyEmailResponsible(FriendDTO nameDescription, FriendDTO emailFriends, EmailSettings emailSettings);
+        Task BodyEmail(IEnumerable<FriendDTO> friends);
+        Task BodyEmailAdmin(HashSet<string> names);
+        Task BodyEmailResponsible(FriendDTO nameDescription, FriendDTO emailFriends);
     }
 }
