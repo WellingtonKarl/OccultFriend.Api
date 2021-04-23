@@ -8,4 +8,4 @@
 <a href="https://github.com/WellingtonKarl">
  <img style="border-radius: 50%;" src="https://avatars.githubusercontent.com/u/76018356?v=4" width="100px;" alt=""/>
  <br />
- <sub><b>Wellington Karl</b></sub></a> <a href="https://www.linkedin.com/in/wellingtonkarl/" title="OccultFriend.API">🚀</a>
+ <sub><b>Wellington Karl</b></sub></a> <a href="https://github.com/WellingtonKarl" title="OccultFriend.API">🚀</a>
