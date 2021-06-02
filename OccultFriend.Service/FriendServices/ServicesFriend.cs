@@ -34,7 +34,7 @@ namespace OccultFriend.Service.FriendServices
             _random = new Random();
         }
 
-        public async Task Draw(EmailSettings emailSettings)
+        public async Task Draw(bool childPlay)
         {
             Friends = _repositoriesFriend.GetAll().Select(x => new FriendDTO { Name = x.Name, Description = x.Description, Email = x.Email }).ToList();
             var emails = Friends.Select(x => x.Email).ToArray();
@@ -51,15 +51,12 @@ namespace OccultFriend.Service.FriendServices
 
             var ehRepeat = ValidationRepeatDrawn();
 
-            if (ehRepeat == true)
+            if (ehRepeat)
+                await _emailService.BodyEmailAdmin(Names);
+            else
             {
-                await _emailService.BodyEmailAdmin(Names, emailSettings);
-            }
-
-            if (ehRepeat == false)
-            {
-                await Responsible(emailSettings);   // <==== Esse método é familiar, caso precise fazer algum teste comente este método.
-                await _emailService.BodyEmail(Friends, emailSettings);
+                await Responsible(childPlay);
+                await _emailService.BodyEmail(Friends);
             }
         }
 
@@ -67,13 +64,18 @@ namespace OccultFriend.Service.FriendServices
         {
             for (int index = emails.Length; index > 1; index--)
             {
-                int shuffle = _random.Next(index);
-                int indexRandom = _random.Next(shuffle); //Embaralha mais uma vez para garantir que não irá repetir o mesmo participante.
+                int shuffle = MethodRandom(index);
+                int indexRandom = MethodRandom(shuffle); //Embaralha mais uma vez para garantir que não irá repetir o mesmo participante.
 
                 T email = emails[indexRandom];
                 emails[indexRandom] = emails[index - 1];
                 emails[index - 1] = email;
             }
+        }
+
+        private int MethodRandom(int index)
+        {
+            return _random.Next(index);
         }
 
         private bool ValidationRepeatDrawn()
@@ -83,11 +85,11 @@ namespace OccultFriend.Service.FriendServices
 
             foreach (var friend in friends)
             {
-                var name = Friends.First(x => x.Email.Equals(friend.Email));
+                var friendRepeat = Friends.First(x => x.Email.Equals(friend.Email));
 
-                if (friend.Email == name.Email && friend.Name == name.Name)
+                if (friend.Email == friendRepeat.Email && friend.Name == friendRepeat.Name)
                 {
-                    Names.Add(name.Name);
+                    Names.Add(friendRepeat.Name);
                     repeat = true;
                 }
             }
@@ -95,46 +97,60 @@ namespace OccultFriend.Service.FriendServices
             return  repeat;
         }
 
-
-        // Esse método é apenas familiar, caso for fazer algum teste irá estourar uma exceção!
         // Foi criado esse método para crianças que não possuem email, criei um email Alternativo para os dois responsáveis.
         // To-Do ---- Ainda terei que implementar melhorias.
-        private async Task Responsible(EmailSettings emailSettings)
+        private async Task Responsible(bool childWillPlay)
         {
             try
             {
-                var winner = new List<FriendDTO>();
-                var responsible = new List<FriendDTO>();
-                var childs = _repositoriesFriend.Childdrens();
-
-                foreach (var child in childs)
+                if (childWillPlay)
                 {
-                    var name = Friends.First(x => x.Email.Equals(child.Email));
-                    winner.Add(new FriendDTO
+                    var childs = _repositoriesFriend.Childdrens();
+
+                    var winner = Winner(childs);
+                    var responsible = Responsible(childs);
+
+                    var winnerAndResponsible = winner.Zip(responsible, (w, f) => new { Winner = w, Friend = f });
+                    foreach (var wr in winnerAndResponsible)
                     {
-                        Name = string.Concat(name.Name, ", ", child.Name),
-                        Description = name.Description
-                    });
-                    Friends.Remove(name);
-                }
-
-                foreach (var email in childs)
-                {
-                    var friend = Friends.First(x => x.Email.Equals(email.Email));
-                    responsible.Add(friend);
-                    Friends.Remove(friend);
-                }
-
-                var winnerAndResponsible = winner.Zip(responsible, (w, f) => new { Winner = w, Friend = f });
-                foreach (var wr in winnerAndResponsible)
-                {
-                    await _emailService.BodyEmailResponsible(wr.Winner, wr.Friend, emailSettings);
+                        await _emailService.BodyEmailResponsible(wr.Winner, wr.Friend);
+                    }
                 }
             }
             catch (Exception ex)
             {
                 new Exception(ex.Message);
             }
+        }
+
+        private List<FriendDTO> Winner(IEnumerable<FriendDTO> childs)
+        {
+            var winner = new List<FriendDTO>();
+            foreach (var child in childs)
+            {
+                var friendName = Friends.First(x => x.Email.Equals(child.Email));
+                winner.Add(new FriendDTO
+                {
+                    Name = string.Concat(friendName.Name, ", ", child.Name),
+                    Description = friendName.Description
+                });
+                Friends.Remove(friendName);
+            }
+
+            return winner;
+        }
+
+        private List<FriendDTO> Responsible(IEnumerable<FriendDTO> childs)
+        {
+            var responsible = new List<FriendDTO>();
+            foreach (var email in childs)
+            {
+                var friend = Friends.First(x => x.Email.Equals(email.Email));
+                responsible.Add(friend);
+                Friends.Remove(friend);
+            }
+
+            return responsible;
         }
     }
 }

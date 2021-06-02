@@ -14,7 +14,7 @@ namespace OccultFriend.Service.EmailService
     public class EmailTemplate : IEmailTemplate
     {
         // To-DO Melhorias!!!!
-        private readonly string TemplatesFolder = Path.Combine(Directory.GetCurrentDirectory().Replace("\\OccultFriend.API\\", "\\"), "OccultFriend.Service", "Templates", "{0}.html");
+        private readonly string TemplatesFolder = Path.Combine(Directory.GetCurrentDirectory(), "OccultFriend.Service", "Templates", "{0}.html");
         const string PropertyRegex = @"\{(.*?)\}";
         private Dictionary<string, string> Templates { get; set; } = new Dictionary<string, string>();
 
@@ -45,7 +45,7 @@ namespace OccultFriend.Service.EmailService
         {
             if (!Templates.ContainsKey(template))
             {
-                var templatePath = string.Format(TemplatesFolder, template);
+                var templatePath = string.Format(TemplatesFolder.Replace("\\OccultFriend.API\\", "\\"), template);
                 Templates.Add(template, await File.ReadAllTextAsync(templatePath));
             }
             return Templates[template];

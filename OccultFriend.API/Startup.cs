@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using OccultFriend.Domain.IRepositories;
+using OccultFriend.Domain.Model;
 using OccultFriend.Repository.Repositories;
 using OccultFriend.Service.EmailService;
 using OccultFriend.Service.FriendServices;
@@ -26,18 +25,15 @@ namespace OccultFriend.API
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connection = new SqlConnection(Configuration.GetConnectionString("connection"));
-            services.AddSingleton(Configuration.GetSection("EmailSettings").Get<EmailSettings>());
+            services.AddControllers();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
+            services.AddScoped<IEmailSettingService, EmailSettingService>(_ => new EmailSettingService(Configuration.GetSection("EmailSettings").Get<EmailSetting>()));
+            services.AddScoped<IRepositoriesFriend, RepositoriesFriend>(_ => new RepositoriesFriend(new SqlConnection(Configuration.GetConnectionString("connection"))));
             services.AddScoped<IEmailService, EmailServices>();
             services.AddScoped<IServicesFriend, ServicesFriend>();
             services.AddScoped<IEmailTemplate, EmailTemplate>();
-            services.AddScoped<IRepositoriesFriend, RepositoriesFriend>(_ => new RepositoriesFriend(connection));
 
             services.AddSwaggerGen(c =>
             {
@@ -50,7 +46,7 @@ namespace OccultFriend.API
                         Contact = new OpenApiContact
                         {
                             Name = "Wellington Karl",
-                            Url = new Uri("https://github.com/tottywell")
+                            Url = new Uri("https://github.com/WellingtonKarl")
                         }
 
                     });
@@ -61,28 +57,25 @@ namespace OccultFriend.API
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Aplicação Amigo Oculto"));
             }
-            else
-            {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
-            app.UseSwagger();
-
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Aplicação Amigo Oculto");
-            });
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }
