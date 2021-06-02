@@ -25,6 +25,7 @@ namespace OccultFriend.API.Controllers
             _repositoriesFriend = repositoriesFriend;
             _friendService = friendService;
         }
+
         /// <summary>
         /// Recupera todos que estão participando
         /// </summary>
