@@ -1,6 +1,4 @@
 ﻿using OccultFriend.Domain.DTO;
-using OccultFriend.Domain.Model;
-using OccultFriend.Service.EmailService;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

@@ -1,31 +1,34 @@
 ﻿using OccultFriend.Domain.DTO;
 using OccultFriend.Domain.IRepositories;
-using OccultFriend.Service.EmailService;
 using OccultFriend.Service.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.WebSockets;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OccultFriend.Service.FriendServices
 {
     public class ServicesFriend : IServicesFriend
     {
+        #region Attributes
+
         readonly Random _random;
         private readonly IEmailService _emailService;
         private readonly IRepositoriesFriend _repositoriesFriend;
 
+        #endregion
+
+        #region Properties
+
         private List<FriendDTO> Friends { get; set; }
 
         private HashSet<string> _name;
-        private HashSet<string> Names 
+        private HashSet<string> Names
         {
-            get { return _name ?? (_name = new HashSet<string>()); } 
-            set { _name = value; }
+            get { return _name ?? (_name = new HashSet<string>()); }
         }
+
+        #endregion
 
         public ServicesFriend(IEmailService emailService, IRepositoriesFriend repositoriesFriend)
         {
@@ -34,14 +37,22 @@ namespace OccultFriend.Service.FriendServices
             _random = new Random();
         }
 
-        public async Task Draw(bool childPlay)
+        public async Task Draw(bool childWillPlay)
         {
-            Friends = _repositoriesFriend.GetAll().Select(x => new FriendDTO { Name = x.Name, Description = x.Description, Email = x.Email }).ToList();
-            var emails = Friends.Select(x => x.Email).ToArray();
+            Friends = _repositoriesFriend.GetAll()
+                    .Select(f =>
+                    new FriendDTO
+                    {
+                        Name = f.Name,
+                        Description = f.Description,
+                        Email = f.Email
+                    }).ToList();
+
+            var emails = Friends.Select(e => e.Email).ToArray();
 
             Shuffle(emails);
 
-            for (int i = 0; i <= Friends.Count(); i++)
+            for (int i = 0; i <= Friends.Count; i++)
             {
                 foreach (string email in emails)
                 {
@@ -55,7 +66,7 @@ namespace OccultFriend.Service.FriendServices
                 await _emailService.BodyEmailAdmin(Names);
             else
             {
-                await Responsible(childPlay);
+                await EmailSendResponsible(childWillPlay);
                 await _emailService.BodyEmail(Friends);
             }
         }
@@ -87,19 +98,19 @@ namespace OccultFriend.Service.FriendServices
             {
                 var friendRepeat = Friends.First(x => x.Email.Equals(friend.Email));
 
-                if (friend.Email == friendRepeat.Email && friend.Name == friendRepeat.Name)
+                if (friend.Email.Equals(friendRepeat.Email) && friend.Name.Equals(friendRepeat.Name))
                 {
                     Names.Add(friendRepeat.Name);
                     repeat = true;
                 }
             }
 
-            return  repeat;
+            return repeat;
         }
 
         // Foi criado esse método para crianças que não possuem email, criei um email Alternativo para os dois responsáveis.
         // To-Do ---- Ainda terei que implementar melhorias.
-        private async Task Responsible(bool childWillPlay)
+        private async Task EmailSendResponsible(bool childWillPlay)
         {
             try
             {
@@ -107,10 +118,17 @@ namespace OccultFriend.Service.FriendServices
                 {
                     var childs = _repositoriesFriend.Childdrens();
 
-                    var winner = Winner(childs);
-                    var responsible = Responsible(childs);
+                    var winner = GetWinner(childs);
+                    var responsible = GetResponsible(childs);
 
-                    var winnerAndResponsible = winner.Zip(responsible, (w, f) => new { Winner = w, Friend = f });
+                    var winnerAndResponsible = winner.Zip(responsible, (w, f) =>
+                                                new
+                                                {
+                                                    Winner = w,
+                                                    Friend = f
+                                                });
+
+
                     foreach (var wr in winnerAndResponsible)
                     {
                         await _emailService.BodyEmailResponsible(wr.Winner, wr.Friend);
@@ -119,11 +137,11 @@ namespace OccultFriend.Service.FriendServices
             }
             catch (Exception ex)
             {
-                new Exception(ex.Message);
+                throw new ArgumentNullException(ex.Message);
             }
         }
 
-        private List<FriendDTO> Winner(IEnumerable<FriendDTO> childs)
+        private List<FriendDTO> GetWinner(IEnumerable<FriendDTO> childs)
         {
             var winner = new List<FriendDTO>();
             foreach (var child in childs)
@@ -140,7 +158,7 @@ namespace OccultFriend.Service.FriendServices
             return winner;
         }
 
-        private List<FriendDTO> Responsible(IEnumerable<FriendDTO> childs)
+        private List<FriendDTO> GetResponsible(IEnumerable<FriendDTO> childs)
         {
             var responsible = new List<FriendDTO>();
             foreach (var email in childs)

@@ -64,4 +64,7 @@
   <ItemGroup>
     <Build Include="dbo\Tables\Friends.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="FriendsDB.refactorlog" />
+  </ItemGroup>
 </Project>

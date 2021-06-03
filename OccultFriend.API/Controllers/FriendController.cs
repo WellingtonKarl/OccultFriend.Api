@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using OccultFriend.Domain.DTO;
 using OccultFriend.Domain.IRepositories;
 using OccultFriend.Domain.Model;
-using OccultFriend.Service.EmailService;
 using OccultFriend.Service.Interfaces;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace OccultFriend.API.Controllers
 {
@@ -85,17 +78,17 @@ namespace OccultFriend.API.Controllers
         /// <param name="name"></param>
         /// <param name="description"></param>
         /// <param name="email"></param>
-        /// <param name="ehCrianca"></param>
+        /// <param name="isChildreen"></param>
         // PUT api/<FriendController>/5
         [HttpPut("{id}")]
-        public void Put(int id, string name, string description, string email, bool ehCrianca)
+        public void Put(int id, string name, string description, string email, bool isChildreen)
         {
             var friend = new Friend
             {
                 Name = name,
                 Description = description,
                 Email = email,
-                EhCrianca = ehCrianca
+                IsChildreen = isChildreen
             };
 
             _repositoriesFriend.Update(friend, id);
