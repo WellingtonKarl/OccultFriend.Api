@@ -1,8 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Templates\DrawEmailTemplate.html" />
+    <None Remove="Templates\DrawnDuplicateEmailTemplate.html" />
+    <None Remove="Templates\ResponsibleEmailTemplate.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Templates\DrawEmailTemplate.html" />
+    <Resource Include="Templates\DrawnDuplicateEmailTemplate.html" />
+    <Resource Include="Templates\ResponsibleEmailTemplate.html" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
