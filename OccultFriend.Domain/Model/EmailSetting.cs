@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OccultFriend.Domain.Model
+﻿namespace OccultFriend.Domain.Model
 {
     public class EmailSetting
     {

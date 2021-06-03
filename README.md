@@ -4,7 +4,7 @@
 
 <h3>🛠 Tecnologias</h3>
 <ul>
-    <li>.Net Core 2.2</li>
+    <li>.Net Core 2.2 => <b>Migrado para .Net 5.0</b> </li>
     <li>SqlServer</li>
 </ul>
 
