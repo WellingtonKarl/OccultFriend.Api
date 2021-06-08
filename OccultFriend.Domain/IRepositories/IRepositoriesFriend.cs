@@ -1,8 +1,6 @@
 ﻿using OccultFriend.Domain.DTO;
 using OccultFriend.Domain.Model;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace OccultFriend.Domain.IRepositories
 {

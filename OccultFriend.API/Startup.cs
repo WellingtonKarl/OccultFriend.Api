@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using OccultFriend.Domain.IRepositories;
 using OccultFriend.Domain.Model;
@@ -23,7 +24,19 @@ namespace OccultFriend.API
             Configuration = configuration;
         }
 
+        #region Properties
+
+        private static string MyReposytories => "https://github.com/WellingtonKarl";
+        private static string Name => "Wellington Karl";
+        private static string Description => "Uma aplicação para automatizar o sorteio do amigo aculto";
+        private static string Version => "v1";
+        private static string TitleProject => "API Amigo Oculto";
+        private static string NameProject => "Aplicação Amigo Oculto";
+
+
         public IConfiguration Configuration { get; }
+
+        #endregion
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -37,16 +50,16 @@ namespace OccultFriend.API
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1",
+                c.SwaggerDoc(Version,
                     new OpenApiInfo
                     {
-                        Title = "API Amigo Oculto",
-                        Version = "v1",
-                        Description = "Uma aplicação para automatizar o sorteio do amigo aculto",
+                        Title = TitleProject,
+                        Version = Version,
+                        Description = Description,
                         Contact = new OpenApiContact
                         {
-                            Name = "Wellington Karl",
-                            Url = new Uri("https://github.com/WellingtonKarl")
+                            Name = Name,
+                            Url = new Uri(MyReposytories)
                         }
 
                     });
@@ -57,13 +70,13 @@ namespace OccultFriend.API
             });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Aplicação Amigo Oculto"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", NameProject));
             }
 
             app.UseHttpsRedirection();
