@@ -1,10 +1,8 @@
-﻿using OccultFriend.Domain.DTO;
-using OccultFriend.Service.Interfaces;
+﻿using OccultFriend.Service.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -14,32 +12,43 @@ namespace OccultFriend.Service.EmailService
     public class EmailTemplate : IEmailTemplate
     {
         // To-DO Melhorias!!!!
-        private readonly string TemplatesFolder = Path.Combine(Directory.GetCurrentDirectory(), "OccultFriend.Service", "Templates", "{0}.html");
-        const string PropertyRegex = @"\{(.*?)\}";
+
+        #region Properties
+
+        private static string PropertyRegex => @"\{(.*?)\}";
+        private static string TemplatesFolder => Path.Combine(Directory.GetCurrentDirectory(), "OccultFriend.Service", "Templates", "{0}.html");
         private Dictionary<string, string> Templates { get; set; } = new Dictionary<string, string>();
 
-        public async Task<string> GenerateTemplateDrawEmail(string template, object model)
+        #endregion
+
+        #region Methods Publics
+
+        public async Task<string> GenerateTemplateDrawEmail(string template, object viewModel)
         {
             var templateString = await GetTemplateAsync(template);
             var matches = Regex.Matches(templateString, PropertyRegex);
             foreach (Match item in matches)
             {
-                templateString = templateString.Replace(item.Value, GetPropValue(model, item.Groups[1].Value));
+                templateString = templateString.Replace(item.Value, GetPropValue(viewModel, item.Groups[1].Value));
             }
             return templateString;
         }
 
         public string GenerateTextNamesDuplicate(HashSet<string> names)
         {
-            string textNames = null;
+            var textNames = new StringBuilder();
 
             foreach (var name in names)
             {
-                textNames = !string.IsNullOrEmpty(textNames) ? string.Concat(",", textNames, name,  ",") : string.Concat(textNames, name);
+                textNames.Append($"{name}, ");
             }
 
-            return textNames;
+            return textNames.Length > 0 ? textNames.ToString().Remove(textNames.Length - 2) : textNames.ToString();
         }
+
+        #endregion
+
+        #region Methods Privates
 
         private async Task<string> GetTemplateAsync(string template)
         {
@@ -51,7 +60,7 @@ namespace OccultFriend.Service.EmailService
             return Templates[template];
         }
 
-        private string GetPropValue(object obj, string propName)
+        private static string GetPropValue(object obj, string propName)
         {
             string[] nameParts = propName.Split('.');
             if (nameParts.Length == 1)
@@ -71,5 +80,7 @@ namespace OccultFriend.Service.EmailService
             }
             return obj?.ToString();
         }
+
+        #endregion
     }
 }
