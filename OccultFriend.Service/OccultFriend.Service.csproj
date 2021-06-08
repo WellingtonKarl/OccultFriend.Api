@@ -5,12 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Templates\DrawEmailTemplate.html" />
-    <None Remove="Templates\DrawnDuplicateEmailTemplate.html" />
-    <None Remove="Templates\ResponsibleEmailTemplate.html" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Resource Include="Templates\DrawEmailTemplate.html" />
     <Resource Include="Templates\DrawnDuplicateEmailTemplate.html" />
     <Resource Include="Templates\ResponsibleEmailTemplate.html" />
