@@ -25,7 +25,7 @@ namespace OccultFriend.Service.FriendServices
         private HashSet<string> _name;
         private HashSet<string> Names
         {
-            get { return _name ?? (_name = new HashSet<string>()); }
+            get { return _name ??= new HashSet<string>(); }
         }
 
         #endregion
@@ -63,11 +63,11 @@ namespace OccultFriend.Service.FriendServices
             var ehRepeat = ValidationRepeatDrawn();
 
             if (ehRepeat)
-                await _emailService.BodyEmailAdmin(Names);
+                await _emailService.SendEmailAdminService(Names);
             else
             {
-                await EmailSendResponsible(childWillPlay);
-                await _emailService.BodyEmail(Friends);
+                await SendEmailResponsible(childWillPlay);
+                await _emailService.SendEmailParticipantService(Friends);
             }
         }
 
@@ -110,7 +110,7 @@ namespace OccultFriend.Service.FriendServices
 
         // Foi criado esse método para crianças que não possuem email, criei um email Alternativo para os dois responsáveis.
         // To-Do ---- Ainda terei que implementar melhorias.
-        private async Task EmailSendResponsible(bool childWillPlay)
+        private async Task SendEmailResponsible(bool childWillPlay)
         {
             try
             {
@@ -131,7 +131,7 @@ namespace OccultFriend.Service.FriendServices
 
                     foreach (var wr in winnerAndResponsible)
                     {
-                        await _emailService.BodyEmailResponsible(wr.Winner, wr.Friend);
+                        await _emailService.SendEmailResponsibleService(wr.Winner, wr.Friend);
                     }
                 }
             }
