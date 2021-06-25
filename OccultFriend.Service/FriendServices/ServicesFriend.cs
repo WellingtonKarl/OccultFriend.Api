@@ -54,10 +54,7 @@ namespace OccultFriend.Service.FriendServices
 
             for (int i = 0; i <= Friends.Count; i++)
             {
-                foreach (string email in emails)
-                {
-                    Friends[i++].Email = email;
-                }
+                SetEmailFriends(emails, i);
             }
 
             var ehRepeat = ValidationRepeatDrawn();
@@ -81,6 +78,14 @@ namespace OccultFriend.Service.FriendServices
                 T email = emails[indexRandom];
                 emails[indexRandom] = emails[index - 1];
                 emails[index - 1] = email;
+            }
+        }
+
+        private void SetEmailFriends(string[] emails, int i)
+        {
+            foreach (string email in emails)
+            {
+                Friends[i++].Email = email;
             }
         }
 
@@ -118,18 +123,17 @@ namespace OccultFriend.Service.FriendServices
                 {
                     var childs = _repositoriesFriend.Childdrens();
 
-                    var winner = GetWinner(childs);
-                    var responsible = GetResponsible(childs);
+                    var winners = GetWinners(childs);
+                    var responsibles = GetResponsibles(childs);
 
-                    var winnerAndResponsible = winner.Zip(responsible, (w, f) =>
+                    var winnersAndResponsibles = winners.Zip(responsibles, (w, f) =>
                                                 new
                                                 {
                                                     Winner = w,
                                                     Friend = f
                                                 });
 
-
-                    foreach (var wr in winnerAndResponsible)
+                    foreach (var wr in winnersAndResponsibles)
                     {
                         await _emailService.SendEmailResponsibleService(wr.Winner, wr.Friend);
                     }
@@ -141,7 +145,7 @@ namespace OccultFriend.Service.FriendServices
             }
         }
 
-        private List<FriendDTO> GetWinner(IEnumerable<FriendDTO> childs)
+        private List<FriendDTO> GetWinners(IEnumerable<FriendDTO> childs)
         {
             var winner = new List<FriendDTO>();
             foreach (var child in childs)
@@ -158,7 +162,7 @@ namespace OccultFriend.Service.FriendServices
             return winner;
         }
 
-        private List<FriendDTO> GetResponsible(IEnumerable<FriendDTO> childs)
+        private List<FriendDTO> GetResponsibles(IEnumerable<FriendDTO> childs)
         {
             var responsible = new List<FriendDTO>();
             foreach (var email in childs)

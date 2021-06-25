@@ -5,6 +5,7 @@ using OccultFriend.Service.EmailService;
 using OccultFriend.Service.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace OccultFriend.Test.ServiceTest
@@ -15,12 +16,16 @@ namespace OccultFriend.Test.ServiceTest
         private readonly Mock<IEmailTemplate> _emailTemplateMock;
         private readonly Mock<IEmailSettingService> _emailSettingServiceMock;
         private readonly Fixture _fixture;
+        private List<FriendDTO> _friendDTOs;
+        private List<FriendDTO> _friendDTOsRresponsible;
 
         public EmailSeviceTest()
         {
             _emailTemplateMock = new Mock<IEmailTemplate>();
             _emailSettingServiceMock = new Mock<IEmailSettingService>();
             _fixture = new Fixture();
+            _friendDTOs = new List<FriendDTO>();
+            _friendDTOsRresponsible = new List<FriendDTO>();
 
             _emailServiceTest = new EmailServices(_emailTemplateMock.Object, _emailSettingServiceMock.Object);
         }
@@ -34,16 +39,60 @@ namespace OccultFriend.Test.ServiceTest
         }
 
         [Fact]
-        public void Should_Send_Email_Participant_When_Informed_Five_Particpant_NotChildren()
+        public void Should_Send_Email_Participant_When_Informed_Five_Participant_NotChildren()
         {
             var listfriendMount = MountDTOFriendNotChildren();
 
             Assert.ThrowsAsync<NullReferenceException>(() => _emailServiceTest.SendEmailParticipantService(listfriendMount));
         }
 
+        [Fact]
+        public void Should_Send_Email_Responsible_And_Participant_When_Informed_Five_Participant_withChildrens()
+        {
+            _friendDTOs = MountDTOFriendWithTwoChildrens().ToList();
+            _friendDTOsRresponsible = MountDTOFriendNotChildren().ToList();
+
+            var childrens = new List<FriendDTO>
+            {
+                new FriendDTO
+                {
+                    Description = "Ganhar uma mochila",
+                    Email = "test1@parts.com",   
+                    Id = 4,
+                    IsChildreen = true,
+                    Name = "Foster Doe"
+                },
+                new FriendDTO
+                {
+                    Description = "Ganhar uma Notebook",
+                    Email = "test2@parts.com", 
+                    Id = 5,
+                    IsChildreen = true,
+                    Name = "Pearl Doe"
+                }
+            };
+
+            var winnersAndResponsibleTuple = GetWinnersAndResponsibles(childrens);
+
+            var winnerAndResponsible = winnersAndResponsibleTuple.Winner.Zip(winnersAndResponsibleTuple.Responsible, (w, f) =>
+                                                new
+                                                {
+                                                    Winner = w,
+                                                    Friend = f
+                                                });
+
+            foreach (var wr in winnerAndResponsible)
+            {
+                Assert.ThrowsAsync<NullReferenceException>(() => _emailServiceTest.SendEmailResponsibleService(wr.Winner, wr.Friend));
+            }            
+        }
+
+
+        #region Methods Privates
+
         private static IEnumerable<FriendDTO> MountDTOFriendNotChildren()
         {
-            return new List<FriendDTO> 
+            return new List<FriendDTO>
             {
                 new FriendDTO
                 {
@@ -87,5 +136,88 @@ namespace OccultFriend.Test.ServiceTest
                 },
             };
         }
+
+        private static IEnumerable<FriendDTO> MountDTOFriendWithTwoChildrens()
+        {
+            return new List<FriendDTO>
+            {
+                new FriendDTO
+                {
+                    Description = "Ganhar uma bike",
+                    Email = "test2@parts.com",
+                    Id = 1,
+                    IsChildreen = false,
+                    Name = "John Doe"
+                },
+                new FriendDTO
+                {
+                    Description = "Ganhar um balão",
+                    Email = "test6@parts.com",
+                    Id = 2,
+                    IsChildreen = false,
+                    Name = "Jane Doe"
+                },
+                new FriendDTO
+                {
+                    Description = "Ganhar uma pipa",
+                    Email = "test1@parts.com",
+                    Id = 3,
+                    IsChildreen = false,
+                    Name = "Marley Doe"
+                },
+                new FriendDTO
+                {
+                    Description = "Ganhar uma pipa",
+                    Email = "test1@parts.com",
+                    Id = 3,
+                    IsChildreen = false,
+                    Name = "Jimmy Doe"
+                },
+                new FriendDTO
+                {
+                    Description = "Ganhar uma mochila",
+                    Email = "test2@parts.com",
+                    Id = 4,
+                    IsChildreen = true,
+                    Name = "Foster Doe"
+                },
+                new FriendDTO
+                {
+                    Description = "Ganhar uma Notebook",
+                    Email = "test@parts.com",
+                    Id = 5,
+                    IsChildreen = true,
+                    Name = "Pearl Doe"
+                },
+            };
+        }
+
+        private (List<FriendDTO> Winner, List<FriendDTO> Responsible) GetWinnersAndResponsibles(IEnumerable<FriendDTO> childs)
+        {
+            var winner = new List<FriendDTO>();
+            var responsible = new List<FriendDTO>();
+
+            foreach (var child in childs)
+            {
+                var friendName = _friendDTOs.FirstOrDefault(x => x.Email.Equals(child.Email));
+                winner.Add(new FriendDTO
+                {
+                    Name = string.Concat(friendName.Name, ", ", child.Name),
+                    Description = friendName.Description
+                });
+                _friendDTOs.Remove(friendName);
+            }
+
+            foreach (var email in childs)
+            {
+                var friend = _friendDTOsRresponsible.FirstOrDefault(x => x.Email.Equals(email.Email));
+                responsible.Add(friend);
+                _friendDTOs.Remove(friend);
+            }
+
+            return (winner, responsible);
+        }
+
+        #endregion
     }
 }
