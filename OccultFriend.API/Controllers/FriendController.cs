@@ -20,7 +20,7 @@ namespace OccultFriend.API.Controllers
         }
 
         /// <summary>
-        /// Recupera todos que estão participando
+        /// Retorna todos os amigos cadastrados.
         /// </summary>
         /// <returns></returns>
         // GET: api/<FriendController>
@@ -33,7 +33,7 @@ namespace OccultFriend.API.Controllers
         }
 
         /// <summary>
-        /// Pega um único amigo.
+        /// Retorna um único amigo.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -68,7 +68,7 @@ namespace OccultFriend.API.Controllers
         {
             await _friendService.Draw(childPlay);
 
-            return Ok("Email com os amigos sorteados com sucesso!");
+            return Ok("Email enviado com os amigos sorteados com sucesso!");
         }
 
         /// <summary>
