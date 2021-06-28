@@ -19,5 +19,5 @@
  
  Feito com ❤️ por Wellington Karl 👋🏽 Entre em contato!
 
-[![Linkedin Badge](https://img.shields.io/badge/-Wellington-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/wellingtonkarl/)](https://www.linkedin.com/in/tgmarinho/) 
+[![Linkedin Badge](https://img.shields.io/badge/-Wellington-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/wellingtonkarl/)](https://www.linkedin.com/in/wellingtonkarl/) 
 [![Gmail Badge](https://img.shields.io/badge/-wellington.regiskarl@gmail.com-c14438?style=flat-square&logo=Gmail&logoColor=white&link=mailto:wellington.regiskarl@gmail.com)](mailto:wellington.regiskarl@gmail.com)
