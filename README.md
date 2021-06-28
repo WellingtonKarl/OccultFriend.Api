@@ -4,8 +4,11 @@
 
 <h3>🛠 Tecnologias</h3>
 <ul>
-    <li>.Net Core 2.2 => <b>Migrado para .Net 5.0</b> </li>
+    <li>.Net 5.0</li>
     <li>SqlServer</li>
+    <li>ORM Dapper</li>
+    <li>Unit Test</li>
+    <li>Project DataBase</li>
 </ul>
 
 <h3>Autor</h3>
