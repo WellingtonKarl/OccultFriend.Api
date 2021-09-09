@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using OccultFriend.Domain.IRepositories;
 using OccultFriend.Domain.Model;
+using OccultFriend.Repository.MongoRepository;
 using OccultFriend.Repository.Repositories;
 using OccultFriend.Service.EmailService;
 using OccultFriend.Service.FriendServices;
@@ -40,10 +41,17 @@ namespace OccultFriend.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionsStringsSqlServer = Configuration.GetConnectionString("connection");
+            
             services.AddControllers();
 
             services.AddScoped<IEmailSettingService, EmailSettingService>(_ => new EmailSettingService(Configuration.GetSection("EmailSettings").Get<EmailSetting>()));
-            services.AddScoped<IRepositoriesFriend, RepositoriesFriend>(_ => new RepositoriesFriend(new SqlConnection(Configuration.GetConnectionString("connection"))));
+
+            if (!string.IsNullOrWhiteSpace(connectionsStringsSqlServer))
+                services.AddScoped<IRepositoriesFriend, RepositoriesFriend>(_ => new RepositoriesFriend(new SqlConnection(connectionsStringsSqlServer)));
+            else
+                services.AddScoped<IRepositoriesFriend, FriendRepository>(_ => new FriendRepository(Configuration.GetSection("HostMongoConnection").Get<HostMongoConnection>()));
+
             services.AddScoped<IEmailService, EmailServices>();
             services.AddScoped<IServicesFriend, ServicesFriend>();
             services.AddScoped<IEmailTemplate, EmailTemplate>();
