@@ -11,9 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Templates\DrawEmailTemplate.html" />
-    <Content Include="Templates\DrawnDuplicateEmailTemplate.html" />
-    <Content Include="Templates\ResponsibleEmailTemplate.html" />
+    <EmbeddedResource Include="Templates\DrawEmailTemplate.html" />
+    <EmbeddedResource Include="Templates\DrawnDuplicateEmailTemplate.html" />
+    <EmbeddedResource Include="Templates\ResponsibleEmailTemplate.html" />
   </ItemGroup>
 
   <ItemGroup>
