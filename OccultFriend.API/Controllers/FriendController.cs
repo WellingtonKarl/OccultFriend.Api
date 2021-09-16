@@ -74,7 +74,7 @@ namespace OccultFriend.API.Controllers
         /// </summary>
         /// <param name="childPlay"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpGet]
         [Route("Draw")]
         public async Task<IActionResult> Draw(bool childPlay)
         {
