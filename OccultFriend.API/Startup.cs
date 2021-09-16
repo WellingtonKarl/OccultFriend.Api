@@ -43,15 +43,6 @@ namespace OccultFriend.API
         {
             var connectionsStringsSqlServer = Configuration.GetConnectionString("connection");
 
-            services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(
-                    builder =>
-                    {
-                        builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-                    });
-            });
-
             services.AddControllers();
 
             services.AddScoped<IEmailSettingService, EmailSettingService>(_ => new EmailSettingService(Configuration.GetSection("EmailSettings").Get<EmailSetting>()));
