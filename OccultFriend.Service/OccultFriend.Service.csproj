@@ -5,6 +5,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Templates\DrawEmailTemplate.html" />
+    <None Remove="Templates\DrawnDuplicateEmailTemplate.html" />
+    <None Remove="Templates\ResponsibleEmailTemplate.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\DrawEmailTemplate.html" />
+    <EmbeddedResource Include="Templates\DrawnDuplicateEmailTemplate.html" />
+    <EmbeddedResource Include="Templates\ResponsibleEmailTemplate.html" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Templates\DrawEmailTemplate.html" />
     <Resource Include="Templates\DrawnDuplicateEmailTemplate.html" />
     <Resource Include="Templates\ResponsibleEmailTemplate.html" />
