@@ -11,12 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Templates\DrawEmailTemplate.html" />
-    <Content Include="Templates\DrawnDuplicateEmailTemplate.html" />
-    <Content Include="Templates\ResponsibleEmailTemplate.html" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Resource Include="Templates\DrawEmailTemplate.html" />
     <Resource Include="Templates\DrawnDuplicateEmailTemplate.html" />
     <Resource Include="Templates\ResponsibleEmailTemplate.html" />
