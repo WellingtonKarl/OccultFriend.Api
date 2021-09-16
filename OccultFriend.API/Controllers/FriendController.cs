@@ -72,10 +72,11 @@ namespace OccultFriend.API.Controllers
         /// <summary>
         /// Sorteia os Amigos
         /// </summary>
+        /// <param name="childPlay"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("Draw")]
-        public async Task<IActionResult> Draw([FromForm] bool childPlay)
+        public async Task<IActionResult> Draw(bool childPlay)
         {
             await _friendService.Draw(childPlay);
 
