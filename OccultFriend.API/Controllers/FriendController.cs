@@ -1,5 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using OccultFriend.Domain.DTO;
 using OccultFriend.Domain.IRepositories;
 using OccultFriend.Domain.Model;
 using OccultFriend.Service.Interfaces;
@@ -20,57 +23,77 @@ namespace OccultFriend.API.Controllers
         }
 
         /// <summary>
-        /// Retorna todos os amigos cadastrados.
+        /// Retorna todos(as) os(as) amigos(as) cadastrados(as).
         /// </summary>
         /// <returns></returns>
         // GET: api/<FriendController>
         [HttpGet]
         public IActionResult Get()
         {
-            var friends =  _repositoriesFriend.GetAll();
+            try
+            {
+                var friends = _repositoriesFriend.GetAll();
 
-            return Ok(friends);
+                return StatusCode(200, friends);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
         }
 
         /// <summary>
-        /// Retorna um único amigo.
+        /// Retorna um(a) único(a) amigo(a).
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         // GET api/<FriendController>/5
         [HttpGet("{id}")]
-        public Friend Get(int id)
+        public IActionResult Get(int id)
         {
-            var friend = _repositoriesFriend.Get(id);
-            return friend;
+            try
+            {
+                var friend = _repositoriesFriend.Get(id);
+                return StatusCode(200, friend);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
         }
 
         /// <summary>
-        /// Cadastra um amigo.
+        /// Cadastra um(a) amigo(a).
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="email"></param>
-        /// <param name="description"></param>
-        /// <param name="isChildren"></param>
+        /// <param name="registerFriend"></param>
         /// <returns></returns>
         // POST api/<FriendController>
         [HttpPost]
-        public ActionResult Post(string name, string email, string description, bool isChildren)
+        public IActionResult Post(RegisterFriendDto registerFriend)
         {
-            var friend = new Friend
+            try
             {
-                Name = name,
-                Email = email,
-                Description = description,
-                IsChildreen = isChildren
-            };
+                ViewModelHasSomeNullOrEmptyProperty(registerFriend);
 
-            _repositoriesFriend.Create(friend);
-            return Ok();
+                var friend = new Friend
+                {
+                    Name = registerFriend.Name,
+                    Email = registerFriend.Email,
+                    Description = registerFriend.Description,
+                    IsChildreen = registerFriend.IsChildren.Value
+                };
+
+                _repositoriesFriend.Create(friend);
+                return Ok(StatusCode(201, "Cadastrado com Sucesso!"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
         }
 
         /// <summary>
-        /// Sorteia os Amigos
+        /// Sorteia os(as) Amigos(as)
         /// </summary>
         /// <param name="childPlay"></param>
         /// <returns></returns>
@@ -78,32 +101,46 @@ namespace OccultFriend.API.Controllers
         [Route("Draw")]
         public async Task<IActionResult> Draw(bool childPlay)
         {
-            await _friendService.Draw(childPlay);
+            try
+            {
+                await _friendService.Draw(childPlay);
 
-            return Ok("Email enviado com os amigos sorteados com sucesso!");
+                return StatusCode(200, "Email enviado com os amigos sorteados com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
         }
 
         /// <summary>
-        /// Atualiza um amigo já cadastrado.
+        /// Atualiza um(a) amigo(a) já cadastrado(a).
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="name"></param>
-        /// <param name="description"></param>
-        /// <param name="email"></param>
-        /// <param name="isChildreen"></param>
+        /// <param name="friendDto"></param>
+        /// <returns></returns>
         // PUT api/<FriendController>/5
         [HttpPut("{id}")]
-        public void Put(int id, string name, string description, string email, bool isChildreen)
+        public IActionResult Put(FriendDTO friendDto)
         {
-            var friend = new Friend
+            try
             {
-                Name = name,
-                Description = description,
-                Email = email,
-                IsChildreen = isChildreen
-            };
+                var friend = new Friend
+                {
+                    Id = friendDto.Id,
+                    Name = friendDto.Name,
+                    Description = friendDto.Description,
+                    Email = friendDto.Email,
+                    IsChildreen = friendDto.IsChildreen
+                };
 
-            _repositoriesFriend.Update(friend, id);
+                _repositoriesFriend.Update(friend);
+
+                return StatusCode(200, "Atualizado com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
         }
 
         /// <summary>
@@ -115,8 +152,29 @@ namespace OccultFriend.API.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            _repositoriesFriend.Delete(id);
-            return Ok(Response.StatusCode);
+            try
+            {
+                _repositoriesFriend.Delete(id);
+                return StatusCode(200, "Deletado com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
+        }
+
+        private static void ViewModelHasSomeNullOrEmptyProperty(object obj)
+        {
+            foreach (PropertyInfo propriedade in obj.GetType().GetProperties())
+            {
+                string value = Convert.ToString(propriedade.GetValue(obj));
+
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    var exception = new NullReferenceException("Todos os campos devem estar preenchidos.");
+                    throw exception;
+                }
+            }
         }
     }
 }

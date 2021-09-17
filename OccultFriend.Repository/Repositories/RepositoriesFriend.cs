@@ -60,7 +60,7 @@ namespace OccultFriend.Repository.Repositories
             return friends;
         }
 
-        public void Update(Friend friend, int id)
+        public void Update(Friend friend)
         {
             var sql = new StringBuilder();
             sql.Append("Update Friends Set ");
@@ -84,7 +84,7 @@ namespace OccultFriend.Repository.Repositories
                     Description = friend.Description,
                     Email = friend.Email,
                     IsChildreen = friend.IsChildreen,
-                    Id = id
+                    Id = friend.Id
                 });
         }
 
