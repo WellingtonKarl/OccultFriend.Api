@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -6,15 +6,9 @@
 
   <ItemGroup>
     <None Remove="Templates\DrawEmailTemplate.html" />
-    <None Remove="Templates\DrawnDuplicateEmailTemplate.html" />
     <None Remove="Templates\ResponsibleEmailTemplate.html" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="Templates\DrawEmailTemplate.html" />
-    <Resource Include="Templates\DrawnDuplicateEmailTemplate.html" />
-    <Resource Include="Templates\ResponsibleEmailTemplate.html" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
@@ -24,4 +18,15 @@
     <ProjectReference Include="..\OccultFriend.Domain\OccultFriend.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Templates\DrawEmailTemplate.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\ResponsibleEmailTemplate.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\DrawnDuplicateEmailTemplate.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
