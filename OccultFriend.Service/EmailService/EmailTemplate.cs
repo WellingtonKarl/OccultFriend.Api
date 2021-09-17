@@ -54,7 +54,8 @@ namespace OccultFriend.Service.EmailService
         {
             if (!Templates.ContainsKey(template))
             {
-                Templates.Add(template, await File.ReadAllTextAsync(TemplatesFolder));
+                var templatePath = string.Format(TemplatesFolder, template);
+                Templates.Add(template, await File.ReadAllTextAsync(templatePath));
             }
             return Templates[template];
         }
