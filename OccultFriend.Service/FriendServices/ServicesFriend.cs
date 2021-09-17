@@ -54,7 +54,10 @@ namespace OccultFriend.Service.FriendServices
 
             for (int i = 0; i <= Friends.Count; i++)
             {
-                SetEmailFriends(emails, i);
+                foreach (string email in emails)
+                {
+                    Friends[i++].Email = email;
+                }
             }
 
             var ehRepeat = ValidationRepeatDrawn();
@@ -78,14 +81,6 @@ namespace OccultFriend.Service.FriendServices
                 T email = emails[indexRandom];
                 emails[indexRandom] = emails[index - 1];
                 emails[index - 1] = email;
-            }
-        }
-
-        private void SetEmailFriends(string[] emails, int i)
-        {
-            foreach (string email in emails)
-            {
-                Friends[i++].Email = email;
             }
         }
 

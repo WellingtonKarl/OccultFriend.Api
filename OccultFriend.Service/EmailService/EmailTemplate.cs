@@ -16,7 +16,7 @@ namespace OccultFriend.Service.EmailService
         #region Properties
 
         private static string PropertyRegex => @"\{(.*?)\}";
-        private static string TemplatesFolder => Path.Combine(Directory.GetCurrentDirectory(), "OccultFriend.Service", "Templates", "{0}.html");
+        private static string TemplatesFolder => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "{0}.html");
         private Dictionary<string, string> Templates { get; set; } = new Dictionary<string, string>();
 
         #endregion
@@ -54,7 +54,7 @@ namespace OccultFriend.Service.EmailService
         {
             if (!Templates.ContainsKey(template))
             {
-                var templatePath = string.Format(TemplatesFolder.Replace("\\OccultFriend.API\\", "\\"), template);
+                var templatePath = string.Format(TemplatesFolder, template);
                 Templates.Add(template, await File.ReadAllTextAsync(templatePath));
             }
             return Templates[template];

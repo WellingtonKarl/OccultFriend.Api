@@ -48,12 +48,23 @@ namespace OccultFriend.API.Controllers
         /// <summary>
         /// Cadastra um amigo.
         /// </summary>
-        /// <param name="friend"></param>
+        /// <param name="name"></param>
+        /// <param name="email"></param>
+        /// <param name="description"></param>
+        /// <param name="isChildren"></param>
         /// <returns></returns>
         // POST api/<FriendController>
         [HttpPost]
-        public ActionResult Post([FromForm] Friend friend)
+        public ActionResult Post(string name, string email, string description, bool isChildren)
         {
+            var friend = new Friend
+            {
+                Name = name,
+                Email = email,
+                Description = description,
+                IsChildreen = isChildren
+            };
+
             _repositoriesFriend.Create(friend);
             return Ok();
         }
@@ -61,10 +72,11 @@ namespace OccultFriend.API.Controllers
         /// <summary>
         /// Sorteia os Amigos
         /// </summary>
+        /// <param name="childPlay"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpGet]
         [Route("Draw")]
-        public async Task<IActionResult> Draw([FromForm] bool childPlay)
+        public async Task<IActionResult> Draw(bool childPlay)
         {
             await _friendService.Draw(childPlay);
 

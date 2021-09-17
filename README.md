@@ -3,13 +3,13 @@
 <p align="center">🚀 Seguindo movimento de grandes Empresas, a troca da nomenclatura da branch principal para <b>MAIN</b>. Aplicação baseada em uma brincadeira familiar, mas com propósito de pensar "fora da Caixa". Pensar fora da família.</p>
 
 <h3>🛠 Tecnologias</h3>
-<ul>
-    <li>.Net 5.0</li>
-    <li>SqlServer</li>
-    <li>ORM Dapper</li>
-    <li>Unit Test</li>
-    <li>Project DataBase</li>
-</ul>
+
+- [.Net 5.0](https://dotnet.microsoft.com/download/dotnet/5.0)
+- [SqlServer-2019 - Local](https://www.microsoft.com/pt-br/sql-server/sql-server-2019)
+- [ORM Dapper](https://dapper-tutorial.net/step-by-step-tutorial)
+- [Unit Test](https://docs.microsoft.com/pt-br/visualstudio/test/walkthrough-creating-and-running-unit-tests-for-managed-code?view=vs-2019)
+- [Project Database](https://www.c-sharpcorner.com/article/how-to-create-sql-server-database-project-with-visual-studio/)
+- [MongoDB - Production](https://docs.mongodb.com/guides/)
 
 <h3>Autor</h3>
 <a href="https://github.com/WellingtonKarl">
