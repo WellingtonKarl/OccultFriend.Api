@@ -2,11 +2,14 @@
 using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OccultFriend.Domain.IRepositories;
 using OccultFriend.Domain.Model;
@@ -43,7 +46,30 @@ namespace OccultFriend.API
         {
             var connectionsStringsSqlServer = Configuration.GetConnectionString("connection");
 
+            services.AddCors();
             services.AddControllers();
+
+            var key = Encoding.ASCII.GetBytes(Configuration.GetSection("SettingsJWT").GetValue<string>("Secret"));
+
+            services.AddAuthentication(a => 
+            {
+                a.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                a.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(j => 
+            {
+                j.RequireHttpsMetadata = false;
+                j.SaveToken = true;
+                j.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
+            services.AddScoped<ITokenService, TokenService>(_ => new TokenService(Configuration.GetSection("SettingsJWT").GetValue<string>("Secret")));
 
             services.AddScoped<IEmailSettingService, EmailSettingService>(_ => new EmailSettingService(Configuration.GetSection("EmailSettings").Get<EmailSetting>()));
 
@@ -87,10 +113,18 @@ namespace OccultFriend.API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", NameProject));
             }
 
+            app.UseCors(c => 
+            {
+                c.AllowAnyOrigin();
+                c.AllowAnyMethod();
+                c.AllowAnyHeader();
+            });
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

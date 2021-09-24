@@ -37,7 +37,8 @@ namespace OccultFriend.Repository.MongoRepository
                     Email = f.Email,
                     Id = f.Id,
                     IsChildreen = f.IsChildreen,
-                    Name = f.Name
+                    Name = f.Name,
+                    Password = f.Password
                 });
         }
 
@@ -65,7 +66,8 @@ namespace OccultFriend.Repository.MongoRepository
                 Email = f.Email,
                 Id = f.Id,
                 IsChildreen = f.IsChildreen,
-                Name = f.Name
+                Name = f.Name,
+                Password = f.Password
             });
         }
 
