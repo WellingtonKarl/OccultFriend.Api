@@ -37,7 +37,8 @@ namespace OccultFriend.Repository.MongoRepository
                     Email = f.Email,
                     Id = f.Id,
                     IsChildreen = f.IsChildreen,
-                    Name = f.Name
+                    Name = f.Name,
+                    Password = f.Password
                 });
         }
 
@@ -65,18 +66,27 @@ namespace OccultFriend.Repository.MongoRepository
                 Email = f.Email,
                 Id = f.Id,
                 IsChildreen = f.IsChildreen,
-                Name = f.Name
+                Name = f.Name,
+                Password = f.Password
             });
         }
 
-        public void Update(Friend friend, int id)
+        public void Update(Friend friend)
         {
-            _friends.ReplaceOne(f => f.Id == id, friend);
+            _friends.ReplaceOne(f => f.Id == friend.Id, friend);
         }
 
         private void GetCountIdFriends()
         {
-            Id += _friends.AsQueryable().Count();
+            try
+            {
+                Id += _friends.AsQueryable().Count();
+            }
+            catch (Exception ex)
+            {
+                var exception = new ApplicationException(ex.Message);
+                throw exception;
+            }
         }
     }
 }

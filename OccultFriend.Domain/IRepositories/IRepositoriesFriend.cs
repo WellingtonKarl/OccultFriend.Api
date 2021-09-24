@@ -10,7 +10,7 @@ namespace OccultFriend.Domain.IRepositories
         Friend Get(int id);
         IEnumerable<FriendDTO> GetAll();
         IEnumerable<FriendDTO> Childdrens();
-        void Update(Friend friend, int id);
+        void Update(Friend friend);
         void Delete(int id);
     }
 }
