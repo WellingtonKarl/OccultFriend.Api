@@ -79,10 +79,10 @@ namespace OccultFriend.Service.FriendServices
             ValidateLengthFile(file);
             var directory = @"\Images\";
 
-            if (!Directory.Exists(path + directory))
-                Directory.CreateDirectory(path + directory);
+            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + directory))
+                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + directory);
 
-            using FileStream filestream = File.Create(path + directory + file.FileName);
+            using FileStream filestream = File.Create(AppDomain.CurrentDomain.BaseDirectory + directory + file.FileName);
             await file.CopyToAsync(filestream);
             filestream.Flush();
 
