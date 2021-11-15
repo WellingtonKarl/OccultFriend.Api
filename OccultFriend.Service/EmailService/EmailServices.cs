@@ -38,7 +38,7 @@ namespace OccultFriend.Service.EmailService
                 {
                     Friend = friend,
                     Image = UrlImage + friend.PathImage,
-                    Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, GetTimeZoneFromBrazil()).ToString("dd/MM/yyyy")
+                    Date = DateTime.UtcNow.ToString("dd/MM/yyyy"),
                 };
 
                 var html = _emailTemplate.GenerateTemplateDrawEmail(DrawEmailTemplate, viewModel);
@@ -52,7 +52,7 @@ namespace OccultFriend.Service.EmailService
             var viewModel = new
             {
                 Data = _emailTemplate.GenerateTemplateTable(dicFriendDuplicate),
-                Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, GetTimeZoneFromBrazil()).ToString("dd/MM/yyyy"),
+                Date = DateTime.UtcNow.ToString("dd/MM/yyyy"),
             };
 
             var html = _emailTemplate.GenerateTemplateDrawEmail(DrawnDuplicateEmailTemplate, viewModel);
@@ -71,7 +71,7 @@ namespace OccultFriend.Service.EmailService
                 NameChild = nameDescription.Name[(position + 1)..],
                 DrawnName = nameDescription.Name.Substring(0, position),
                 Description = nameDescription.Description,
-                Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, GetTimeZoneFromBrazil()).ToString("dd/MM/yyyy"),
+                Date = DateTime.UtcNow.ToString("dd/MM/yyyy"),
                 //Image = $"https://localhost:44370/api/Friend/Image?name=Image.jpeg"
             };
 
