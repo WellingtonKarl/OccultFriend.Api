@@ -8,5 +8,6 @@
         public string Description { get; set; }
         public string Email { get; set; }
         public bool IsChildreen { get; set; }
+        public string PathImage { get; set; }
     }
 }

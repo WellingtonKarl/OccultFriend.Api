@@ -1,8 +1,10 @@
-﻿using OccultFriend.Domain.DTO;
+﻿using Microsoft.AspNetCore.Http;
+using OccultFriend.Domain.DTO;
 using OccultFriend.Domain.IRepositories;
 using OccultFriend.Service.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,10 +24,10 @@ namespace OccultFriend.Service.FriendServices
 
         private List<FriendDTO> Friends { get; set; }
 
-        private HashSet<string> _name;
-        private HashSet<string> Names
+        private Dictionary<string, string> _dicFriendDuplicate;
+        private Dictionary<string, string> DicFriendDuplicate
         {
-            get { return _name ??= new HashSet<string>(); }
+            get { return _dicFriendDuplicate ??= new Dictionary<string, string>(); }
         }
 
         #endregion
@@ -45,7 +47,8 @@ namespace OccultFriend.Service.FriendServices
                     {
                         Name = f.Name,
                         Description = f.Description,
-                        Email = f.Email
+                        Email = f.Email,
+                        PathImage = f.PathImage
                     }).ToList();
 
             var emails = Friends.Select(e => e.Email).ToArray();
@@ -63,12 +66,27 @@ namespace OccultFriend.Service.FriendServices
             var ehRepeat = ValidationRepeatDrawn();
 
             if (ehRepeat)
-                await _emailService.SendEmailAdminService(Names);
+                await _emailService.SendEmailAdminService(DicFriendDuplicate);
             else
             {
                 await SendEmailResponsible(childWillPlay);
                 await _emailService.SendEmailParticipantService(Friends);
             }
+        }
+
+        public async Task<string> CreateUploadImage(IFormFile file, string path)
+        {
+            ValidateLengthFile(file);
+            var directory = @"\Images\";
+
+            if (!Directory.Exists(path + directory))
+                Directory.CreateDirectory(path + directory);
+
+            using FileStream filestream = File.Create(path + directory + file.FileName);
+            await file.CopyToAsync(filestream);
+            filestream.Flush();
+
+            return file.FileName;
         }
 
         private void Shuffle<T>(T[] emails)
@@ -100,7 +118,7 @@ namespace OccultFriend.Service.FriendServices
 
                 if (friend.Email.Equals(friendRepeat.Email) && friend.Name.Equals(friendRepeat.Name))
                 {
-                    Names.Add(friendRepeat.Name);
+                    DicFriendDuplicate.Add(friendRepeat.Name, friendRepeat.PathImage);
                     repeat = true;
                 }
             }
@@ -168,6 +186,15 @@ namespace OccultFriend.Service.FriendServices
             }
 
             return responsible;
+        }
+
+        private void ValidateLengthFile(IFormFile file)
+        {
+            if (file.Length > 5242880)
+            {
+                var ex = new ApplicationException("Tamanho da imagem é superior de 5 MB");
+                throw ex;
+            }
         }
     }
 }

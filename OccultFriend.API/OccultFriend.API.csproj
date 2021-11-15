@@ -31,4 +31,8 @@
     <ProjectReference Include="..\OccultFriend.Service\OccultFriend.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

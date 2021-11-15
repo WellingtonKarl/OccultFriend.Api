@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OccultFriend.Domain.DTO;
 using OccultFriend.Domain.IRepositories;
@@ -17,12 +20,14 @@ namespace OccultFriend.API.Controllers
         private IRepositoriesFriend _repositoriesFriend;
         private IServicesFriend _friendService;
         private ITokenService _tokenService;
+        private IWebHostEnvironment _environment;
 
-        public FriendController(IRepositoriesFriend repositoriesFriend, IServicesFriend friendService, ITokenService tokenService)
+        public FriendController(IRepositoriesFriend repositoriesFriend, IServicesFriend friendService, ITokenService tokenService, IWebHostEnvironment environment)
         {
             _repositoriesFriend = repositoriesFriend;
             _friendService = friendService;
             _tokenService = tokenService;
+            _environment = environment;
         }
 
         /// <summary>
@@ -68,14 +73,43 @@ namespace OccultFriend.API.Controllers
         }
 
         /// <summary>
+        /// Usuário se logar, caso tenha se cadastrado.
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("login")]
+        [AllowAnonymous]
+        public IActionResult Authenticate(RequestLogin login)
+        {
+            try
+            {
+                var t = Request;
+                var friend = _repositoriesFriend.Get(login.Name, login.Password);
+
+                if (friend is null)
+                    return NotFound(new { message = "Usuário ou senha inválidas." });
+
+                var token = _tokenService.GenerateToken(friend);
+
+                return Ok(StatusCode(200, $"{User.Identity.Name} Cadastrado com Sucesso! Seu token é: {token}"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Cadastra um(a) amigo(a).
         /// </summary>
+        /// <param name="file"></param>
         /// <param name="registerFriend"></param>
         /// <returns></returns>
         // POST api/<FriendController>
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult Post(RegisterFriendDto registerFriend)
+        public async Task<IActionResult> Post([FromForm] IFormFile file, RegisterFriendDto registerFriend)
         {
             try
             {
@@ -87,14 +121,13 @@ namespace OccultFriend.API.Controllers
                     Password = registerFriend.Password,
                     Email = registerFriend.Email,
                     Description = registerFriend.Description,
-                    IsChildreen = registerFriend.IsChildren.Value
+                    IsChildreen = registerFriend.IsChildren.Value,
+                    PathImage = await _friendService.CreateUploadImage(file, _environment.WebRootPath)
                 };
 
                 _repositoriesFriend.Create(friend);
 
-                var token = _tokenService.GenerateToken(friend);
-
-                return Ok(StatusCode(201, $"{registerFriend.Name} Cadastrado com Sucesso! Seu token é: {token}"));
+                return Ok(StatusCode(201, $"{registerFriend.Name} Cadastrado com Sucesso!"));
             }
             catch (Exception ex)
             {
@@ -175,6 +208,21 @@ namespace OccultFriend.API.Controllers
             {
                 return StatusCode(400, ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Visualiza imagem cadastrada pelo nome.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        // GET api/<controller>/5
+        [HttpGet]
+        [Route("Image")]
+        public IActionResult GetImage(string name)
+        {
+            var path = Path.Combine(_environment.WebRootPath, "Images", name);
+            var imageFileStream = System.IO.File.OpenRead(path);
+            return File(imageFileStream, "image/jpeg");
         }
 
         private static void ViewModelHasSomeNullOrEmptyProperty(object obj)

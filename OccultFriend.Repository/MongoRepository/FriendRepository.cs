@@ -58,6 +58,11 @@ namespace OccultFriend.Repository.MongoRepository
             return _friends.Find(f => f.Id == id).FirstOrDefault();
         }
 
+        public Friend Get(string name, string password)
+        {
+            return _friends.Find(f => f.Name == name && f.Password == password).FirstOrDefault();
+        }
+
         public IEnumerable<FriendDTO> GetAll()
         {
             return _friends.AsQueryable().Select(f => new FriendDTO 
