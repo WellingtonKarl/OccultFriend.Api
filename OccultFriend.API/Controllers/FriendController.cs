@@ -220,7 +220,7 @@ namespace OccultFriend.API.Controllers
         [Route("Image")]
         public IActionResult GetImage(string name)
         {
-            var path = Path.Combine(_environment.WebRootPath, "Images", name);
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", name);
             var imageFileStream = System.IO.File.OpenRead(path);
             return File(imageFileStream, "image/jpeg");
         }
