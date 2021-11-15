@@ -17,6 +17,7 @@ namespace OccultFriend.Service.EmailService
 
         private static string PropertyRegex => @"\{(.*?)\}";
         private static string TemplatesFolder => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "{0}.html");
+        private static string UrlImage => $"https://appdev-occultfriend-api.herokuapp.com/api/Friend/Image?name=";
         private Dictionary<string, string> Templates { get; set; } = new Dictionary<string, string>();
 
         #endregion
@@ -34,16 +35,21 @@ namespace OccultFriend.Service.EmailService
             return templateString;
         }
 
-        public string GenerateTextNamesDuplicate(HashSet<string> names)
+        public string GenerateTemplateTable(Dictionary<string, string> dicFriendDuplicate)
         {
-            var textNames = new StringBuilder();
+            var tableDateBuild = new StringBuilder();
 
-            foreach (var name in names)
+            foreach(var friendDuplicate in dicFriendDuplicate)
             {
-                textNames.Append($"{name}, ");
+
+                tableDateBuild.AppendLine("<tr>");
+                tableDateBuild.AppendLine($"<td>{friendDuplicate.Key}<td>");
+
+                tableDateBuild.AppendLine($"<td><img src=\"{UrlImage + friendDuplicate.Value}\" style=\"height:50px; width:50px; border-radius:50%;\"/><td>");
+                tableDateBuild.AppendLine("</tr>");
             }
 
-            return textNames.Length > 0 ? textNames.ToString().Remove(textNames.Length - 2) : textNames.ToString();
+            return tableDateBuild.ToString() ?? string.Empty;
         }
 
         #endregion

@@ -4,12 +4,24 @@
 <head>
     <meta charset="utf-8" />
     <title></title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            text-align:center;
+        }
+    </style>
 </head>
+
 <body>
     <h4>Algo de errado aconteceu com o sorteio!</h4>
-    <p>Abaixo são os nomes que foram duplicados</p>
+    <p>Abaixo são os nomes que foram duplicados <strong>hora do erro: </strong>{Date}</p>
 
-    <p><strong>Nome(s): </strong>{Names}, <strong>hora do erro: </strong>{Date}</p>
-
+    <table style="width:100%">
+        <tr>
+            <th> Nome <th>
+            <th> Perfil <th>
+        </tr>
+        {Data}
+    </table>
 </body>
 </html>

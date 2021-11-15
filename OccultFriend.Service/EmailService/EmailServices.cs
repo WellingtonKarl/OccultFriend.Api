@@ -20,6 +20,7 @@ namespace OccultFriend.Service.EmailService
         private static string DrawEmailTemplate => "DrawEmailTemplate";
         private static string DrawnDuplicateEmailTemplate => "DrawnDuplicateEmailTemplate";
         private static string ResponsibleEmailTemplate => "ResponsibleEmailTemplate";
+        private static string UrlImage => $"https://appdev-occultfriend-api.herokuapp.com/api/Friend/Image?name=";
 
         #endregion
 
@@ -36,7 +37,8 @@ namespace OccultFriend.Service.EmailService
                 var viewModel = new
                 {
                     Friend = friend,
-                    Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, GetTimeZoneFromBrazil()).ToString("dd/MM/yyyy - HH:MM:ss")
+                    Image = UrlImage + friend.PathImage,
+                    Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, GetTimeZoneFromBrazil()).ToString("dd/MM/yyyy")
                 };
 
                 var html = _emailTemplate.GenerateTemplateDrawEmail(DrawEmailTemplate, viewModel);
@@ -45,12 +47,12 @@ namespace OccultFriend.Service.EmailService
             }
         }
 
-        public async Task SendEmailAdminService(HashSet<string> names)
+        public async Task SendEmailAdminService(Dictionary<string, string> dicFriendDuplicate)
         {
             var viewModel = new
             {
-                Names = _emailTemplate.GenerateTextNamesDuplicate(names),
-                Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, GetTimeZoneFromBrazil()).ToString("dd/MM/yyyy - HH:MM:ss")
+                Data = _emailTemplate.GenerateTemplateTable(dicFriendDuplicate),
+                Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, GetTimeZoneFromBrazil()).ToString("dd/MM/yyyy"),
             };
 
             var html = _emailTemplate.GenerateTemplateDrawEmail(DrawnDuplicateEmailTemplate, viewModel);
@@ -58,6 +60,7 @@ namespace OccultFriend.Service.EmailService
             await SendEmailService(null, await html);
         }
 
+        //TODo melhorias, ao menos só testarei o envio sem as crianças.
         public async Task SendEmailResponsibleService(FriendDTO nameDescription, FriendDTO emailFriends)
         {
             var position = nameDescription.Name.IndexOf(",");
@@ -68,7 +71,8 @@ namespace OccultFriend.Service.EmailService
                 NameChild = nameDescription.Name[(position + 1)..],
                 DrawnName = nameDescription.Name.Substring(0, position),
                 Description = nameDescription.Description,
-                Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, GetTimeZoneFromBrazil()).ToString("dd/MM/yyyy - HH:MM:ss")
+                Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, GetTimeZoneFromBrazil()).ToString("dd/MM/yyyy"),
+                //Image = $"https://localhost:44370/api/Friend/Image?name=Image.jpeg"
             };
 
             var html = _emailTemplate.GenerateTemplateDrawEmail(ResponsibleEmailTemplate, viewModel);

@@ -21,8 +21,8 @@ namespace OccultFriend.Repository.Repositories
 
         public void Create(Friend friend)
         {
-            var sql = @"Insert Into Friends (Name, Password, Description, Email, IsChildreen)  
-                        Values(@Name, @Password, @Description, @Email, @IsChildreen)";
+            var sql = @"Insert Into Friends (Name, Password, Description, Email, IsChildreen, PathImage)  
+                        Values(@Name, @Password, @Description, @Email, @IsChildreen, @PathImage)";
 
             _sqlConnection.Query<Friend>(
                     sql,
@@ -32,7 +32,8 @@ namespace OccultFriend.Repository.Repositories
                         Password = friend.Password,
                         Description = friend.Description,
                         Email = friend.Email,
-                        IsChildreen = friend.IsChildreen
+                        IsChildreen = friend.IsChildreen,
+                        PathImage = friend.PathImage
                     });
         }
 
@@ -43,6 +44,13 @@ namespace OccultFriend.Repository.Repositories
             var friend = _sqlConnection.Query<Friend>(sql, new { Id = id }).SingleOrDefault();
 
             return friend;
+        }
+
+        public Friend Get(string name, string password)
+        {
+            var sql = @"Select * From Friends where Name = @Name And Password = @Password";
+
+            return _sqlConnection.Query<Friend>(sql, new { Name = name, Password = password }).SingleOrDefault();
         }
 
         public IEnumerable<FriendDTO> GetAll()
