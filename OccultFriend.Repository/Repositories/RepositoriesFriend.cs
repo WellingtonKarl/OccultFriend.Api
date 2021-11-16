@@ -45,6 +45,13 @@ namespace OccultFriend.Repository.Repositories
             return friend;
         }
 
+        public Friend Get(string name, string password)
+        {
+            var sql = @"Select * from Friends Where Name = @Name And Password = @Password";
+
+            return _sqlConnection.Query<Friend>(sql, new { Name = name, Password = password }).SingleOrDefault();
+        }
+
         public IEnumerable<FriendDTO> GetAll()
         {
             var sql = "Select * from Friends";

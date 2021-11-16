@@ -3,8 +3,10 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -69,6 +71,8 @@ namespace OccultFriend.API
                 };
             });
 
+            services.AddHealthChecks();
+
             services.AddScoped<ITokenService, TokenService>(_ => new TokenService(Configuration.GetSection("SettingsJWT").GetValue<string>("Secret")));
 
             services.AddScoped<IEmailSettingService, EmailSettingService>(_ => new EmailSettingService(Configuration.GetSection("EmailSettings").Get<EmailSetting>()));
@@ -102,6 +106,18 @@ namespace OccultFriend.API
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+
+            /*  Encontramos um problema causado por nossas cadeias de conexão com isso. Nossa configuração é fazer com que o cliente autorize
+                em um banco de dados específico que possui coleções. Eu entendo que isso é estranho e há uma solução alternativa
+                (especifique um banco de dados diferente na verificação de integridade), mas a suposição de que haverá coleções no banco de dados causa uma exceção "Sequência não contém elementos".
+            */
+            services.AddHealthChecks()
+                .AddSqlServer(connectionsStringsSqlServer, name: "sqlserver", tags: new string[] { "db", "data" })
+                .AddMongoDb(Configuration.GetSection("HostMongoConnection").GetValue<string>("ConnectionString"),
+                name: "mongodb", 
+                tags: new string[] { "db", "data" });
+
+            services.AddHealthChecksUI().AddInMemoryStorage();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -118,6 +134,17 @@ namespace OccultFriend.API
                 c.AllowAnyOrigin();
                 c.AllowAnyMethod();
                 c.AllowAnyHeader();
+            });
+
+            app.UseHealthChecks("/healthchecks-data-ui", new HealthCheckOptions() 
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+
+            app.UseHealthChecksUI(options => 
+            {
+                options.UIPath = "/monitor";
             });
 
             app.UseHttpsRedirection();
