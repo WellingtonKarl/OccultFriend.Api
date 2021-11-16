@@ -21,14 +21,15 @@ namespace OccultFriend.Repository.Repositories
 
         public void Create(Friend friend)
         {
-            var sql = @"Insert Into Friends (Name, Description, Email, IsChildreen)  
-                        Values(@Name, @Description, @Email, @IsChildreen)";
+            var sql = @"Insert Into Friends (Name, Password, Description, Email, IsChildreen)  
+                        Values(@Name, @Password, @Description, @Email, @IsChildreen)";
 
             _sqlConnection.Query<Friend>(
                     sql,
                     new
                     {
                         Name = friend.Name,
+                        Password = friend.Password,
                         Description = friend.Description,
                         Email = friend.Email,
                         IsChildreen = friend.IsChildreen
@@ -42,6 +43,13 @@ namespace OccultFriend.Repository.Repositories
             var friend = _sqlConnection.Query<Friend>(sql, new { Id = id }).SingleOrDefault();
 
             return friend;
+        }
+
+        public Friend Get(string name, string password)
+        {
+            var sql = @"Select * from Friends Where Name = @Name And Password = @Password";
+
+            return _sqlConnection.Query<Friend>(sql, new { Name = name, Password = password }).SingleOrDefault();
         }
 
         public IEnumerable<FriendDTO> GetAll()
@@ -60,13 +68,16 @@ namespace OccultFriend.Repository.Repositories
             return friends;
         }
 
-        public void Update(Friend friend, int id)
+        public void Update(Friend friend)
         {
             var sql = new StringBuilder();
             sql.Append("Update Friends Set ");
 
             if (!string.IsNullOrEmpty(friend.Name))
                 sql.Append("Name = @Name, ");
+
+            if (!string.IsNullOrWhiteSpace(friend.Password))
+                sql.Append("Password = @Password, ");
 
             if (!string.IsNullOrEmpty(friend.Description))
                 sql.Append("Description = @Description, ");
@@ -81,10 +92,11 @@ namespace OccultFriend.Repository.Repositories
                 new
                 {
                     Name = friend.Name,
+                    Password = friend.Password,
                     Description = friend.Description,
                     Email = friend.Email,
                     IsChildreen = friend.IsChildreen,
-                    Id = id
+                    Id = friend.Id
                 });
         }
 

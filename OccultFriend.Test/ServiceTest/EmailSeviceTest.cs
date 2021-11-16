@@ -60,7 +60,8 @@ namespace OccultFriend.Test.ServiceTest
                     Email = "test1@parts.com",   
                     Id = 4,
                     IsChildreen = true,
-                    Name = "Foster Doe"
+                    Name = "Foster Doe",
+                    Password = "12349872"
                 },
                 new FriendDTO
                 {
@@ -68,7 +69,8 @@ namespace OccultFriend.Test.ServiceTest
                     Email = "test2@parts.com", 
                     Id = 5,
                     IsChildreen = true,
-                    Name = "Pearl Doe"
+                    Name = "Pearl Doe",
+                    Password = "12349876"
                 }
             };
 
@@ -100,7 +102,8 @@ namespace OccultFriend.Test.ServiceTest
                     Email = "test@parts.com",
                     Id = 1,
                     IsChildreen = false,
-                    Name = "John Doe"
+                    Name = "John Doe",
+                    Password = "1234634234"
                 },
                 new FriendDTO
                 {
@@ -108,7 +111,8 @@ namespace OccultFriend.Test.ServiceTest
                     Email = "test1@parts.com",
                     Id = 2,
                     IsChildreen = false,
-                    Name = "Jane Doe"
+                    Name = "Jane Doe",
+                    Password = "12348924"
                 },
                 new FriendDTO
                 {
@@ -116,7 +120,8 @@ namespace OccultFriend.Test.ServiceTest
                     Email = "test2@parts.com",
                     Id = 3,
                     IsChildreen = false,
-                    Name = "Jimmy Doe"
+                    Name = "Jimmy Doe",
+                    Password = "123442425"
                 },
                 new FriendDTO
                 {
@@ -124,7 +129,8 @@ namespace OccultFriend.Test.ServiceTest
                     Email = "test3@parts.com",
                     Id = 4,
                     IsChildreen = false,
-                    Name = "Foster Doe"
+                    Name = "Foster Doe",
+                    Password = "123463242"
                 },
                 new FriendDTO
                 {
@@ -132,7 +138,8 @@ namespace OccultFriend.Test.ServiceTest
                     Email = "test4@parts.com",
                     Id = 5,
                     IsChildreen = false,
-                    Name = "Pearl Doe"
+                    Name = "Pearl Doe",
+                    Password = "123423242"
                 },
             };
         }
@@ -147,7 +154,8 @@ namespace OccultFriend.Test.ServiceTest
                     Email = "test2@parts.com",
                     Id = 1,
                     IsChildreen = false,
-                    Name = "John Doe"
+                    Name = "John Doe",
+                    Password = "1234"
                 },
                 new FriendDTO
                 {
@@ -155,7 +163,8 @@ namespace OccultFriend.Test.ServiceTest
                     Email = "test6@parts.com",
                     Id = 2,
                     IsChildreen = false,
-                    Name = "Jane Doe"
+                    Name = "Jane Doe",
+                    Password = "123456"
                 },
                 new FriendDTO
                 {
@@ -163,7 +172,8 @@ namespace OccultFriend.Test.ServiceTest
                     Email = "test1@parts.com",
                     Id = 3,
                     IsChildreen = false,
-                    Name = "Marley Doe"
+                    Name = "Marley Doe",
+                    Password = "1234834"
                 },
                 new FriendDTO
                 {
@@ -171,7 +181,8 @@ namespace OccultFriend.Test.ServiceTest
                     Email = "test1@parts.com",
                     Id = 3,
                     IsChildreen = false,
-                    Name = "Jimmy Doe"
+                    Name = "Jimmy Doe",
+                    Password = "123463424"
                 },
                 new FriendDTO
                 {
@@ -179,7 +190,8 @@ namespace OccultFriend.Test.ServiceTest
                     Email = "test2@parts.com",
                     Id = 4,
                     IsChildreen = true,
-                    Name = "Foster Doe"
+                    Name = "Foster Doe",
+                    Password = "123431424"
                 },
                 new FriendDTO
                 {
@@ -187,7 +199,8 @@ namespace OccultFriend.Test.ServiceTest
                     Email = "test@parts.com",
                     Id = 5,
                     IsChildreen = true,
-                    Name = "Pearl Doe"
+                    Name = "Pearl Doe",
+                    Password = "12343534"
                 },
             };
         }

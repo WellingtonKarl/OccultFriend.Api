@@ -37,7 +37,8 @@ namespace OccultFriend.Repository.MongoRepository
                     Email = f.Email,
                     Id = f.Id,
                     IsChildreen = f.IsChildreen,
-                    Name = f.Name
+                    Name = f.Name,
+                    Password = f.Password
                 });
         }
 
@@ -57,6 +58,11 @@ namespace OccultFriend.Repository.MongoRepository
             return _friends.Find(f => f.Id == id).FirstOrDefault();
         }
 
+        public Friend Get(string name, string password)
+        {
+            return _friends.Find(f => f.Name == name && f.Password == password).FirstOrDefault();
+        }
+
         public IEnumerable<FriendDTO> GetAll()
         {
             return _friends.AsQueryable().Select(f => new FriendDTO 
@@ -65,18 +71,27 @@ namespace OccultFriend.Repository.MongoRepository
                 Email = f.Email,
                 Id = f.Id,
                 IsChildreen = f.IsChildreen,
-                Name = f.Name
+                Name = f.Name,
+                Password = f.Password
             });
         }
 
-        public void Update(Friend friend, int id)
+        public void Update(Friend friend)
         {
-            _friends.ReplaceOne(f => f.Id == id, friend);
+            _friends.ReplaceOne(f => f.Id == friend.Id, friend);
         }
 
         private void GetCountIdFriends()
         {
-            Id += _friends.AsQueryable().Count();
+            try
+            {
+                Id += _friends.AsQueryable().Count();
+            }
+            catch (Exception ex)
+            {
+                var exception = new ApplicationException(ex.Message);
+                throw exception;
+            }
         }
     }
 }
