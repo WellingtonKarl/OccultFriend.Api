@@ -36,7 +36,7 @@ namespace OccultFriend.Service.EmailService
                 var viewModel = new
                 {
                     Friend = friend,
-                    Date = DateTime.Now
+                    Date = DateTime.Now.ToString("dd/MM/yyyy")
                 };
 
                 var html = _emailTemplate.GenerateTemplateDrawEmail(DrawEmailTemplate, viewModel);
@@ -50,7 +50,7 @@ namespace OccultFriend.Service.EmailService
             var viewModel = new
             {
                 Names = _emailTemplate.GenerateTextNamesDuplicate(names),
-                Date = DateTime.Now
+                Date = DateTime.Now.ToString("dd/MM/yyyy")
             };
 
             var html = _emailTemplate.GenerateTemplateDrawEmail(DrawnDuplicateEmailTemplate, viewModel);
@@ -68,7 +68,7 @@ namespace OccultFriend.Service.EmailService
                 NameChild = nameDescription.Name[(position + 1)..],
                 DrawnName = nameDescription.Name.Substring(0, position),
                 Description = nameDescription.Description,
-                Date = DateTime.Now
+                Date = DateTime.Now.ToString("dd/MM/yyyy")
             };
 
             var html = _emailTemplate.GenerateTemplateDrawEmail(ResponsibleEmailTemplate, viewModel);

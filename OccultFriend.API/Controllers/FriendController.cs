@@ -68,6 +68,33 @@ namespace OccultFriend.API.Controllers
         }
 
         /// <summary>
+        /// Usuário se logar, caso tenha se cadastrado.
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("login")]
+        [AllowAnonymous]
+        public IActionResult Authenticate(RequestLogin login)
+        {
+            try
+            {
+                var friend = _repositoriesFriend.Get(login.Name, login.Password);
+
+                if (friend is null)
+                    return NotFound(new { message = "Usuário ou senha inválidas." });
+
+                var token = _tokenService.GenerateToken(friend);
+
+                return Ok(StatusCode(200, $"{User.Identity.Name} Cadastrado com Sucesso! Seu token é: {token}"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Cadastra um(a) amigo(a).
         /// </summary>
         /// <param name="registerFriend"></param>
@@ -92,9 +119,7 @@ namespace OccultFriend.API.Controllers
 
                 _repositoriesFriend.Create(friend);
 
-                var token = _tokenService.GenerateToken(friend);
-
-                return Ok(StatusCode(201, $"{registerFriend.Name} Cadastrado com Sucesso! Seu token é: {token}"));
+                return Ok(StatusCode(201, $"{registerFriend.Name} Cadastrado com Sucesso!"));
             }
             catch (Exception ex)
             {
