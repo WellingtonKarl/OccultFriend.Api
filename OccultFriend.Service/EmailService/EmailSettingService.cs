@@ -37,7 +37,7 @@ namespace OccultFriend.Service.EmailService
                     mailMessage.CC.Add(_emailSettingDto.UserAdmin);
                 }
 
-                mailMessage.Subject = "Testando Email para o App Amigo oculto da família.";
+                mailMessage.Subject = "Sorteio Amigo Oculto";
                 mailMessage.IsBodyHtml = true;
                 mailMessage.Body = html;
 
