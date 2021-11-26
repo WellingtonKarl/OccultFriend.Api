@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -81,7 +82,7 @@ namespace OccultFriend.API.Controllers
         [HttpPost]
         [Route("login")]
         [AllowAnonymous]
-        public IActionResult Authenticate(RequestLogin login)
+        public IActionResult Authenticate([FromBody] RequestLogin login)
         {
             try
             {
@@ -93,11 +94,11 @@ namespace OccultFriend.API.Controllers
                 if (friend is null)
                     return NotFound(new { message = "Usuário ou senha inválidas." });
 
-                var token = _tokenService.GenerateToken(friend);
+                var token = _tokenService.GenerateToken(friend, User);
                 
                 return Ok(new
                 {
-                    Name = User.Identity.Name,
+                    Name = User.Identities.FirstOrDefault(i => i.Name == login.Name).Name,
                     Message = "Login efetuado com Sucesso!",
                     Token = token
                 });
@@ -170,9 +171,9 @@ namespace OccultFriend.API.Controllers
         /// <param name="friendDto"></param>
         /// <returns></returns>
         // PUT api/<FriendController>/5
-        [HttpPut("{id}")]
+        [HttpPut]
         [Authorize]
-        public IActionResult Put(FriendDTO friendDto)
+        public IActionResult Put([FromBody] FriendDTO friendDto)
         {
             try
             {
