@@ -29,7 +29,7 @@ namespace OccultFriend.Service.EmailService
             _emailSettingService = emailSettingService;
         }
 
-        public async Task SendEmailParticipantService(IEnumerable<FriendDTO> friends)
+        public async Task SendEmailParticipantService(IEnumerable<FriendDto> friends)
         {
             foreach (var friend in friends)
             {
@@ -58,7 +58,7 @@ namespace OccultFriend.Service.EmailService
             await SendEmailService(null, await html);
         }
 
-        public async Task SendEmailResponsibleService(FriendDTO nameDescription, FriendDTO emailFriends)
+        public async Task SendEmailResponsibleService(FriendDto nameDescription, FriendDto emailFriends)
         {
             var position = nameDescription.Name.IndexOf(",");
             var viewModel = new

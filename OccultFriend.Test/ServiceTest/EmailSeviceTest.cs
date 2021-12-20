@@ -16,16 +16,16 @@ namespace OccultFriend.Test.ServiceTest
         private readonly Mock<IEmailTemplate> _emailTemplateMock;
         private readonly Mock<IEmailSettingService> _emailSettingServiceMock;
         private readonly Fixture _fixture;
-        private List<FriendDTO> _friendDTOs;
-        private List<FriendDTO> _friendDTOsRresponsible;
+        private List<FriendDto> _FriendDtos;
+        private List<FriendDto> _FriendDtosRresponsible;
 
         public EmailSeviceTest()
         {
             _emailTemplateMock = new Mock<IEmailTemplate>();
             _emailSettingServiceMock = new Mock<IEmailSettingService>();
             _fixture = new Fixture();
-            _friendDTOs = new List<FriendDTO>();
-            _friendDTOsRresponsible = new List<FriendDTO>();
+            _FriendDtos = new List<FriendDto>();
+            _FriendDtosRresponsible = new List<FriendDto>();
 
             _emailServiceTest = new EmailServices(_emailTemplateMock.Object, _emailSettingServiceMock.Object);
         }
@@ -33,7 +33,7 @@ namespace OccultFriend.Test.ServiceTest
         [Fact]
         public void Should_Send_Email_Participant_When_Informed_three_Participant()
         {
-            var listFriends = _fixture.Create<List<FriendDTO>>();
+            var listFriends = _fixture.Create<List<FriendDto>>();
 
             Assert.ThrowsAsync<NullReferenceException>(() => _emailServiceTest.SendEmailParticipantService(listFriends));
         }
@@ -49,12 +49,12 @@ namespace OccultFriend.Test.ServiceTest
         [Fact]
         public void Should_Send_Email_Responsible_And_Participant_When_Informed_Five_Participant_withChildrens()
         {
-            _friendDTOs = MountDTOFriendWithTwoChildrens().ToList();
-            _friendDTOsRresponsible = MountDTOFriendNotChildren().ToList();
+            _FriendDtos = MountDTOFriendWithTwoChildrens().ToList();
+            _FriendDtosRresponsible = MountDTOFriendNotChildren().ToList();
 
-            var childrens = new List<FriendDTO>
+            var childrens = new List<FriendDto>
             {
-                new FriendDTO
+                new FriendDto
                 {
                     Description = "Ganhar uma mochila",
                     Email = "test1@parts.com",   
@@ -63,7 +63,7 @@ namespace OccultFriend.Test.ServiceTest
                     Name = "Foster Doe",
                     Password = "12349872"
                 },
-                new FriendDTO
+                new FriendDto
                 {
                     Description = "Ganhar uma Notebook",
                     Email = "test2@parts.com", 
@@ -92,11 +92,11 @@ namespace OccultFriend.Test.ServiceTest
 
         #region Methods Privates
 
-        private static IEnumerable<FriendDTO> MountDTOFriendNotChildren()
+        private static IEnumerable<FriendDto> MountDTOFriendNotChildren()
         {
-            return new List<FriendDTO>
+            return new List<FriendDto>
             {
-                new FriendDTO
+                new FriendDto
                 {
                     Description = "Ganhar uma bike",
                     Email = "test@parts.com",
@@ -105,7 +105,7 @@ namespace OccultFriend.Test.ServiceTest
                     Name = "John Doe",
                     Password = "1234634234"
                 },
-                new FriendDTO
+                new FriendDto
                 {
                     Description = "Ganhar um balão",
                     Email = "test1@parts.com",
@@ -114,7 +114,7 @@ namespace OccultFriend.Test.ServiceTest
                     Name = "Jane Doe",
                     Password = "12348924"
                 },
-                new FriendDTO
+                new FriendDto
                 {
                     Description = "Ganhar uma pipa",
                     Email = "test2@parts.com",
@@ -123,7 +123,7 @@ namespace OccultFriend.Test.ServiceTest
                     Name = "Jimmy Doe",
                     Password = "123442425"
                 },
-                new FriendDTO
+                new FriendDto
                 {
                     Description = "Ganhar uma mochila",
                     Email = "test3@parts.com",
@@ -132,7 +132,7 @@ namespace OccultFriend.Test.ServiceTest
                     Name = "Foster Doe",
                     Password = "123463242"
                 },
-                new FriendDTO
+                new FriendDto
                 {
                     Description = "Ganhar uma Notebook",
                     Email = "test4@parts.com",
@@ -144,11 +144,11 @@ namespace OccultFriend.Test.ServiceTest
             };
         }
 
-        private static IEnumerable<FriendDTO> MountDTOFriendWithTwoChildrens()
+        private static IEnumerable<FriendDto> MountDTOFriendWithTwoChildrens()
         {
-            return new List<FriendDTO>
+            return new List<FriendDto>
             {
-                new FriendDTO
+                new FriendDto
                 {
                     Description = "Ganhar uma bike",
                     Email = "test2@parts.com",
@@ -157,7 +157,7 @@ namespace OccultFriend.Test.ServiceTest
                     Name = "John Doe",
                     Password = "1234"
                 },
-                new FriendDTO
+                new FriendDto
                 {
                     Description = "Ganhar um balão",
                     Email = "test6@parts.com",
@@ -166,7 +166,7 @@ namespace OccultFriend.Test.ServiceTest
                     Name = "Jane Doe",
                     Password = "123456"
                 },
-                new FriendDTO
+                new FriendDto
                 {
                     Description = "Ganhar uma pipa",
                     Email = "test1@parts.com",
@@ -175,7 +175,7 @@ namespace OccultFriend.Test.ServiceTest
                     Name = "Marley Doe",
                     Password = "1234834"
                 },
-                new FriendDTO
+                new FriendDto
                 {
                     Description = "Ganhar uma pipa",
                     Email = "test1@parts.com",
@@ -184,7 +184,7 @@ namespace OccultFriend.Test.ServiceTest
                     Name = "Jimmy Doe",
                     Password = "123463424"
                 },
-                new FriendDTO
+                new FriendDto
                 {
                     Description = "Ganhar uma mochila",
                     Email = "test2@parts.com",
@@ -193,7 +193,7 @@ namespace OccultFriend.Test.ServiceTest
                     Name = "Foster Doe",
                     Password = "123431424"
                 },
-                new FriendDTO
+                new FriendDto
                 {
                     Description = "Ganhar uma Notebook",
                     Email = "test@parts.com",
@@ -205,27 +205,27 @@ namespace OccultFriend.Test.ServiceTest
             };
         }
 
-        private (List<FriendDTO> Winner, List<FriendDTO> Responsible) GetWinnersAndResponsibles(IEnumerable<FriendDTO> childs)
+        private (List<FriendDto> Winner, List<FriendDto> Responsible) GetWinnersAndResponsibles(IEnumerable<FriendDto> childs)
         {
-            var winner = new List<FriendDTO>();
-            var responsible = new List<FriendDTO>();
+            var winner = new List<FriendDto>();
+            var responsible = new List<FriendDto>();
 
             foreach (var child in childs)
             {
-                var friendName = _friendDTOs.FirstOrDefault(x => x.Email.Equals(child.Email));
-                winner.Add(new FriendDTO
+                var friendName = _FriendDtos.FirstOrDefault(x => x.Email.Equals(child.Email));
+                winner.Add(new FriendDto
                 {
                     Name = string.Concat(friendName.Name, ", ", child.Name),
                     Description = friendName.Description
                 });
-                _friendDTOs.Remove(friendName);
+                _FriendDtos.Remove(friendName);
             }
 
             foreach (var email in childs)
             {
-                var friend = _friendDTOsRresponsible.FirstOrDefault(x => x.Email.Equals(email.Email));
+                var friend = _FriendDtosRresponsible.FirstOrDefault(x => x.Email.Equals(email.Email));
                 responsible.Add(friend);
-                _friendDTOs.Remove(friend);
+                _FriendDtos.Remove(friend);
             }
 
             return (winner, responsible);

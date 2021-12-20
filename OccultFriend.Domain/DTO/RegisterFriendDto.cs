@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace OccultFriend.Domain.DTO
 {
@@ -18,5 +19,7 @@ namespace OccultFriend.Domain.DTO
         public string Description { get; set; }
 
         public bool? IsChildren { get; set; }
+
+        public IFormFile Files { get; set; }
     }
 }
