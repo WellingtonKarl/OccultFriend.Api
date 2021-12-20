@@ -21,8 +21,8 @@ namespace OccultFriend.Repository.Repositories
 
         public void Create(Friend friend)
         {
-            var sql = @"Insert Into Friends (Name, Password, Description, Email, IsChildreen)  
-                        Values(@Name, @Password, @Description, @Email, @IsChildreen)";
+            var sql = @"Insert Into Friends (Name, Password, Description, Email, Data, ImagePath, IsChildreen)  
+                        Values(@Name, @Password, @Description, @Email, @Data, @ImagePath, @IsChildreen)";
 
             _sqlConnection.Query<Friend>(
                     sql,
@@ -32,6 +32,8 @@ namespace OccultFriend.Repository.Repositories
                         Password = friend.Password,
                         Description = friend.Description,
                         Email = friend.Email,
+                        Data = friend.Data,
+                        ImagePath = friend.ImagePath,
                         IsChildreen = friend.IsChildreen
                     });
         }
@@ -40,9 +42,7 @@ namespace OccultFriend.Repository.Repositories
         {
             var sql = @"Select * from Friends where Id = @Id";
 
-            var friend = _sqlConnection.Query<Friend>(sql, new { Id = id }).SingleOrDefault();
-
-            return friend;
+            return _sqlConnection.Query<Friend>(sql, new { Id = id }).SingleOrDefault();
         }
 
         public Friend Get(string name, string password)
@@ -52,20 +52,18 @@ namespace OccultFriend.Repository.Repositories
             return _sqlConnection.Query<Friend>(sql, new { Name = name, Password = password }).SingleOrDefault();
         }
 
-        public IEnumerable<FriendDTO> GetAll()
+        public IEnumerable<FriendDto> GetAll()
         {
             var sql = "Select * from Friends";
-            var friends = _sqlConnection.Query<FriendDTO>(sql);
 
-            return friends;
+            return _sqlConnection.Query<FriendDto>(sql);
         }
 
-        public IEnumerable<FriendDTO> Childdrens()
+        public IEnumerable<FriendDto> Childdrens()
         {
             var sql = "Select * from Friends where IsChildreen = @Childreen";
-            var friends = _sqlConnection.Query<FriendDTO>(sql, new { Childreen = Childreen.ISCHILDREEN });
 
-            return friends;
+            return _sqlConnection.Query<FriendDto>(sql, new { Childreen = Childreen.ISCHILDREEN });
         }
 
         public void Update(Friend friend)
@@ -85,6 +83,9 @@ namespace OccultFriend.Repository.Repositories
             if (!string.IsNullOrEmpty(friend.Email))
                 sql.Append("Email = @Email, ");
 
+            if (!string.IsNullOrWhiteSpace(friend.ImagePath))
+                sql.Append("ImagePath = @ImagePath");
+
             sql.Append("IsChildreen = @IsChildreen Where Id = @Id");
 
             _sqlConnection.Query<Friend>(
@@ -96,6 +97,7 @@ namespace OccultFriend.Repository.Repositories
                     Description = friend.Description,
                     Email = friend.Email,
                     IsChildreen = friend.IsChildreen,
+                    ImagePath = friend.ImagePath,
                     Id = friend.Id
                 });
         }

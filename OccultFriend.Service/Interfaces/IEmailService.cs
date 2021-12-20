@@ -6,8 +6,8 @@ namespace OccultFriend.Service.Interfaces
 {
     public interface IEmailService
     {
-        Task SendEmailParticipantService(IEnumerable<FriendDTO> friends);
+        Task SendEmailParticipantService(IEnumerable<FriendDto> friends);
         Task SendEmailAdminService(HashSet<string> names);
-        Task SendEmailResponsibleService(FriendDTO nameDescription, FriendDTO emailFriends);
+        Task SendEmailResponsibleService(FriendDto nameDescription, FriendDto emailFriends);
     }
 }

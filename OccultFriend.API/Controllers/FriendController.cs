@@ -17,12 +17,15 @@ namespace OccultFriend.API.Controllers
         private IRepositoriesFriend _repositoriesFriend;
         private IServicesFriend _friendService;
         private ITokenService _tokenService;
+        private IImgbbService _imgbbService;
 
-        public FriendController(IRepositoriesFriend repositoriesFriend, IServicesFriend friendService, ITokenService tokenService)
+        public FriendController(IRepositoriesFriend repositoriesFriend, IServicesFriend friendService, ITokenService tokenService,
+            IImgbbService imgbbService)
         {
             _repositoriesFriend = repositoriesFriend;
             _friendService = friendService;
             _tokenService = tokenService;
+            _imgbbService = imgbbService;
         }
 
         /// <summary>
@@ -75,7 +78,7 @@ namespace OccultFriend.API.Controllers
         }
 
         /// <summary>
-        /// Usuário se logar, caso tenha se cadastrado.
+        /// Efetuar login, caso tenha feito o cadastrado.
         /// </summary>
         /// <param name="login"></param>
         /// <returns></returns>
@@ -117,12 +120,14 @@ namespace OccultFriend.API.Controllers
         // POST api/<FriendController>
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult Post([FromBody] RegisterFriendDto registerFriend)
+        public IActionResult Post([FromForm] RegisterFriendDto registerFriend)
         {
             try
             {
                 if (!ModelState.IsValid)
                     return BadRequest();
+
+                var responseImgbb = _imgbbService.UploadImage(registerFriend.Files);
 
                 var friend = new Friend
                 {
@@ -130,7 +135,9 @@ namespace OccultFriend.API.Controllers
                     Password = registerFriend.Password,
                     Email = registerFriend.Email,
                     Description = registerFriend.Description,
-                    IsChildreen = registerFriend.IsChildren.HasValue
+                    Data = DateTime.Now,
+                    ImagePath = responseImgbb.Result.Data.Thumb.Url,
+                    IsChildreen = registerFriend.IsChildren.Value
                 };
 
                 _repositoriesFriend.Create(friend);
@@ -168,23 +175,23 @@ namespace OccultFriend.API.Controllers
         /// <summary>
         /// Atualiza um(a) amigo(a) já cadastrado(a).
         /// </summary>
-        /// <param name="friendDto"></param>
+        /// <param name="FriendDto"></param>
         /// <returns></returns>
         // PUT api/<FriendController>/5
         [HttpPut]
         [Authorize]
-        public IActionResult Put([FromBody] FriendDTO friendDto)
+        public IActionResult Put([FromBody] FriendDto FriendDto)
         {
             try
             {
                 var friend = new Friend
                 {
-                    Id = friendDto.Id,
-                    Name = friendDto.Name,
-                    Password = friendDto.Password,
-                    Description = friendDto.Description,
-                    Email = friendDto.Email,
-                    IsChildreen = friendDto.IsChildreen
+                    Id = FriendDto.Id,
+                    Name = FriendDto.Name,
+                    Password = FriendDto.Password,
+                    Description = FriendDto.Description,
+                    Email = FriendDto.Email,
+                    IsChildreen = FriendDto.IsChildreen
                 };
 
                 _repositoriesFriend.Update(friend);
@@ -198,7 +205,7 @@ namespace OccultFriend.API.Controllers
         }
 
         /// <summary>
-        /// Deleta um amigo.
+        /// Deleta um(a) amigo(a).
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>

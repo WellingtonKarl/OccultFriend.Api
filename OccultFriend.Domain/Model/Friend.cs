@@ -1,4 +1,6 @@
-﻿namespace OccultFriend.Domain.Model
+﻿using System;
+
+namespace OccultFriend.Domain.Model
 {
     public class Friend
     {
@@ -7,6 +9,8 @@
         public string Password { get; set; }
         public string Description { get; set; }
         public string Email { get; set; }
+        public DateTime Data { get; set; }
+        public string ImagePath { get; set; }
         public bool IsChildreen { get; set; }
     }
 }
