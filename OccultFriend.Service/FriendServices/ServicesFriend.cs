@@ -22,10 +22,10 @@ namespace OccultFriend.Service.FriendServices
 
         private List<FriendDto> Friends { get; set; }
 
-        private HashSet<string> _name;
-        private HashSet<string> Names
+        private HashSet<FriendDto> _friendsRepeateds;
+        private HashSet<FriendDto> FriendsRepeateds
         {
-            get { return _name ??= new HashSet<string>(); }
+            get { return _friendsRepeateds ??= new HashSet<FriendDto>(); }
         }
 
         #endregion
@@ -45,7 +45,8 @@ namespace OccultFriend.Service.FriendServices
                     {
                         Name = f.Name,
                         Description = f.Description,
-                        Email = f.Email
+                        Email = f.Email,
+                        ImagePath = f.ImagePath
                     }).ToList();
 
             var emails = Friends.Select(e => e.Email).ToArray();
@@ -63,7 +64,7 @@ namespace OccultFriend.Service.FriendServices
             var ehRepeat = ValidationRepeatDrawn();
 
             if (ehRepeat)
-                await _emailService.SendEmailAdminService(Names);
+                await _emailService.SendEmailAdminService(FriendsRepeateds);
             else
             {
                 await SendEmailResponsible(childWillPlay);
@@ -100,7 +101,7 @@ namespace OccultFriend.Service.FriendServices
 
                 if (friend.Email.Equals(friendRepeat.Email) && friend.Name.Equals(friendRepeat.Name))
                 {
-                    Names.Add(friendRepeat.Name);
+                    FriendsRepeateds.Add(friendRepeat);
                     repeat = true;
                 }
             }
@@ -149,7 +150,8 @@ namespace OccultFriend.Service.FriendServices
                 winner.Add(new FriendDto
                 {
                     Name = string.Concat(friendName.Name, ", ", child.Name),
-                    Description = friendName.Description
+                    Description = friendName.Description,
+                    ImagePath = friendName.ImagePath
                 });
                 Friends.Remove(friendName);
             }

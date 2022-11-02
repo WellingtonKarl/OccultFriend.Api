@@ -34,7 +34,7 @@ namespace OccultFriend.Service.EmailService
             return templateString;
         }
 
-        public string GenerateTextNamesDuplicate(HashSet<string> names)
+        public string GenerateTextNamesDuplicate(IEnumerable<string> names)
         {
             var textNames = new StringBuilder();
 
