@@ -51,8 +51,7 @@ namespace OccultFriend.Service.EmailService
             var viewModel = new
             {
                 Names = _emailTemplate.GenerateTextNamesDuplicate(friendsRepeateds.Select(x => x.Name)),
-                Date = DateTime.Now.ToString("dd/MM/yyyy"),
-                ImagePath = friendsRepeateds.FirstOrDefault().ImagePath
+                Date = DateTime.Now.ToString("dd/MM/yyyy")
             };
 
             var html = _emailTemplate.GenerateTemplateDrawEmail(DrawnDuplicateEmailTemplate, viewModel);
