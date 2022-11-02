@@ -7,7 +7,7 @@ namespace OccultFriend.Service.Interfaces
     {
         Task<string> GenerateTemplateDrawEmail(string template, object viewModel);
 
-        string GenerateTextNamesDuplicate(HashSet<string> names);
+        string GenerateTextNamesDuplicate(IEnumerable<string> names);
 
     }
 }

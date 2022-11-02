@@ -6,14 +6,12 @@ using OccultFriend.Domain.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OccultFriend.Repository.MongoRepository
 {
     public class FriendRepository : IRepositoriesFriend
     {
-        private static int Id { get; set; }
+        private int Id { get; set; }
         private readonly IMongoCollection<Friend> _friends;
 
         public FriendRepository(HostMongoConnection hostMongo)

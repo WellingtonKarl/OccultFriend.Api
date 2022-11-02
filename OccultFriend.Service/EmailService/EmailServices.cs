@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OccultFriend.Domain.DTO;
+using System.Linq;
 
 namespace OccultFriend.Service.EmailService
 {
@@ -45,11 +46,11 @@ namespace OccultFriend.Service.EmailService
             }
         }
 
-        public async Task SendEmailAdminService(HashSet<string> names)
+        public async Task SendEmailAdminService(IEnumerable<FriendDto> friendsRepeateds)
         {
             var viewModel = new
             {
-                Names = _emailTemplate.GenerateTextNamesDuplicate(names),
+                Names = _emailTemplate.GenerateTextNamesDuplicate(friendsRepeateds.Select(x => x.Name)),
                 Date = DateTime.Now.ToString("dd/MM/yyyy")
             };
 
@@ -64,9 +65,11 @@ namespace OccultFriend.Service.EmailService
             var viewModel = new
             {
                 Name = emailFriends.Name,
+                ImagePath = emailFriends.ImagePath,
                 MyDescription = emailFriends.Description,
                 NameChild = nameDescription.Name[(position + 1)..],
                 DrawnName = nameDescription.Name.Substring(0, position),
+                ImagePathDraw = nameDescription.ImagePath,
                 Description = nameDescription.Description,
                 Date = DateTime.Now.ToString("dd/MM/yyyy")
             };
