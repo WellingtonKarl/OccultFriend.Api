@@ -142,8 +142,11 @@ namespace OccultFriend.API.Controllers
 
                 _repositoriesFriend.Create(friend);
 
-                return Ok(StatusCode(201, $"{registerFriend.Name} Cadastrado com Sucesso!"));
-            }
+                return Created(string.Empty, new 
+                { 
+                    Message = $"{registerFriend.Name} Cadastrado com Sucesso!"
+                });
+        }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
