@@ -48,7 +48,7 @@ steps:
   inputs:
     command: publish
     publishWebProjects: false
-    projects: 'OccultFriend.Api/OccultFriend.API/OccultFriend.API.csproj'
+    projects: '$(build.artifactStagingDirectory)/OccultFriend.API.csproj'
     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: true
 
