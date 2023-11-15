@@ -164,7 +164,7 @@ namespace OccultFriend.API.Controllers
             {
                 await _friendService.Draw(childPlay);
 
-                return Ok("Email enviado com os amigos sorteados com sucesso!");
+                return Ok("Email enviado com sucesso!");
             }
             catch (Exception ex)
             {
