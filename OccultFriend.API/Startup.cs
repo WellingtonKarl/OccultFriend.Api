@@ -19,17 +19,13 @@ using OccultFriend.Repository.MongoRepository;
 using OccultFriend.Repository.Repositories;
 using OccultFriend.Service.EmailService;
 using OccultFriend.Service.FriendServices;
+using OccultFriend.Service.IMGBBImages;
 using OccultFriend.Service.Interfaces;
 
 namespace OccultFriend.API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
         #region Properties
 
         private static string MyReposytories => "https://github.com/WellingtonKarl";
@@ -38,20 +34,28 @@ namespace OccultFriend.API
         private static string Version => "v1";
         private static string TitleProject => "API Amigo Oculto";
         private static string NameProject => "Aplicação Amigo Oculto";
-
-
         public IConfiguration Configuration { get; }
 
         #endregion
 
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionsStringsSqlServer = Configuration.GetConnectionString("connection");
+            var connectionSqlServer = Configuration.GetConnectionString("connection");
+            var hostMongoConnection = Configuration.GetSection("HostMongoConnection").Get<HostMongoConnection>();
+            var keySecret = Encoding.ASCII.GetBytes(Configuration.GetSection("SettingsJWT").GetValue<string>("Secret"));
+            var keyImgbbService = Configuration.GetSection("KeyImgbbService").GetValue<string>("Key");
+            var urlImgbbService = Configuration.GetSection("KeyImgbbService").GetValue<string>("UrlImgbbService");
+            var key = Configuration.GetSection("SettingsJWT").GetValue<string>("Secret");
+            var emailSettings = Configuration.GetSection("EmailSettings").Get<EmailSetting>();
 
             services.AddCors();
             services.AddControllers();
 
-            var key = Encoding.ASCII.GetBytes(Configuration.GetSection("SettingsJWT").GetValue<string>("Secret"));
 
             services.AddAuthentication(a => 
             {
@@ -65,7 +69,7 @@ namespace OccultFriend.API
                 j.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    IssuerSigningKey = new SymmetricSecurityKey(keySecret),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
@@ -73,14 +77,16 @@ namespace OccultFriend.API
 
             services.AddHealthChecks();
 
-            services.AddScoped<ITokenService, TokenService>(_ => new TokenService(Configuration.GetSection("SettingsJWT").GetValue<string>("Secret")));
+            services.AddScoped<ITokenService, TokenService>(_ => new TokenService(key));
 
-            services.AddScoped<IEmailSettingService, EmailSettingService>(_ => new EmailSettingService(Configuration.GetSection("EmailSettings").Get<EmailSetting>()));
+            services.AddScoped<IEmailSettingService, EmailSettingService>(_ => new EmailSettingService(emailSettings));
 
-            if (!string.IsNullOrWhiteSpace(connectionsStringsSqlServer))
-                services.AddScoped<IRepositoriesFriend, RepositoriesFriend>(_ => new RepositoriesFriend(new SqlConnection(connectionsStringsSqlServer)));
+            services.AddScoped<IImgbbService, ImgbbService>(_ => new ImgbbService(keyImgbbService, urlImgbbService));
+
+            if (!string.IsNullOrWhiteSpace(connectionSqlServer))
+                services.AddScoped<IRepositoriesFriend, RepositoriesFriend>(_ => new RepositoriesFriend(new SqlConnection(connectionSqlServer)));
             else
-                services.AddScoped<IRepositoriesFriend, FriendRepository>(_ => new FriendRepository(Configuration.GetSection("HostMongoConnection").Get<HostMongoConnection>()));
+                services.AddScoped<IRepositoriesFriend, FriendRepository>(_ => new FriendRepository(hostMongoConnection));
 
             services.AddScoped<IEmailService, EmailServices>();
             services.AddScoped<IServicesFriend, ServicesFriend>();
@@ -112,10 +118,8 @@ namespace OccultFriend.API
                 (especifique um banco de dados diferente na verificação de integridade), mas a suposição de que haverá coleções no banco de dados causa uma exceção "Sequência não contém elementos".
             */
             services.AddHealthChecks()
-                .AddSqlServer(connectionsStringsSqlServer, name: "sqlserver", tags: new string[] { "db", "data" })
-                .AddMongoDb(Configuration.GetSection("HostMongoConnection").GetValue<string>("ConnectionString"),
-                name: "mongodb", 
-                tags: new string[] { "db", "data" });
+                .AddSqlServer(connectionSqlServer, name: "sqlserver", tags: new string[] { "db", "data" })
+                .AddMongoDb(hostMongoConnection.ConnectionString, name: "mongodb", tags: new string[] { "db", "data" });
 
             services.AddHealthChecksUI().AddInMemoryStorage();
         }

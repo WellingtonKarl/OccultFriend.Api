@@ -20,12 +20,12 @@ namespace OccultFriend.Service.FriendServices
 
         #region Properties
 
-        private List<FriendDTO> Friends { get; set; }
+        private List<FriendDto> Friends { get; set; }
 
-        private HashSet<string> _name;
-        private HashSet<string> Names
+        private HashSet<FriendDto> _friendsRepeateds;
+        private HashSet<FriendDto> FriendsRepeateds
         {
-            get { return _name ??= new HashSet<string>(); }
+            get { return _friendsRepeateds ??= new HashSet<FriendDto>(); }
         }
 
         #endregion
@@ -41,11 +41,12 @@ namespace OccultFriend.Service.FriendServices
         {
             Friends = _repositoriesFriend.GetAll()
                     .Select(f =>
-                    new FriendDTO
+                    new FriendDto
                     {
                         Name = f.Name,
                         Description = f.Description,
-                        Email = f.Email
+                        Email = f.Email,
+                        ImagePath = f.ImagePath
                     }).ToList();
 
             var emails = Friends.Select(e => e.Email).ToArray();
@@ -63,7 +64,7 @@ namespace OccultFriend.Service.FriendServices
             var ehRepeat = ValidationRepeatDrawn();
 
             if (ehRepeat)
-                await _emailService.SendEmailAdminService(Names);
+                await _emailService.SendEmailAdminService(FriendsRepeateds);
             else
             {
                 await SendEmailResponsible(childWillPlay);
@@ -100,7 +101,7 @@ namespace OccultFriend.Service.FriendServices
 
                 if (friend.Email.Equals(friendRepeat.Email) && friend.Name.Equals(friendRepeat.Name))
                 {
-                    Names.Add(friendRepeat.Name);
+                    FriendsRepeateds.Add(friendRepeat);
                     repeat = true;
                 }
             }
@@ -140,16 +141,17 @@ namespace OccultFriend.Service.FriendServices
             }
         }
 
-        private List<FriendDTO> GetWinners(IEnumerable<FriendDTO> childs)
+        private List<FriendDto> GetWinners(IEnumerable<FriendDto> childs)
         {
-            var winner = new List<FriendDTO>();
+            var winner = new List<FriendDto>();
             foreach (var child in childs)
             {
                 var friendName = Friends.First(x => x.Email.Equals(child.Email));
-                winner.Add(new FriendDTO
+                winner.Add(new FriendDto
                 {
                     Name = string.Concat(friendName.Name, ", ", child.Name),
-                    Description = friendName.Description
+                    Description = friendName.Description,
+                    ImagePath = friendName.ImagePath
                 });
                 Friends.Remove(friendName);
             }
@@ -157,9 +159,9 @@ namespace OccultFriend.Service.FriendServices
             return winner;
         }
 
-        private List<FriendDTO> GetResponsibles(IEnumerable<FriendDTO> childs)
+        private List<FriendDto> GetResponsibles(IEnumerable<FriendDto> childs)
         {
-            var responsible = new List<FriendDTO>();
+            var responsible = new List<FriendDto>();
             foreach (var email in childs)
             {
                 var friend = Friends.First(x => x.Email.Equals(email.Email));

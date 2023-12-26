@@ -12,12 +12,19 @@
     <p><strong>Uma dica:</strong> para evitarmos enxeridos, assim que receber esse email salve-o na pasta <strong>Arquivados.</strong></p>
     <p>Como são pequenos e não possuem email ainda, foi sorteado diretamente no seu email</p>
     <br />
-    <p><strong>Você tirou: </strong>{Name}</p>
-    <p><strong>E a pessoa quer ganhar: </strong>{MyDescription}</p>
+    <div>
+        <img style="width:50px;height:50px;border-radius:50%" align="right" src={ImagePath} />
+        <p><strong>Você tirou: </strong>{Name}</p>
+        <p><strong>E a pessoa quer ganhar: </strong>{MyDescription}</p>
+    </div>
+    <br />
     <p>Agora é a vez de saber quem os pequenos tiraram.</p>
-
-    <p><strong><a style="font-style:italic; color:darkred">{NameChild}</a> tirou: </strong><a style="color:darkred">{DrawnName}</a></p>
-    <p><strong>E a pessoa quer ganhar: </strong>{Description}</p>
+    <br />
+    <div>
+        <img style="width:50px;height:50px;border-radius:50%" align="right" src={ImagePathDraw} />
+        <p><strong><a style="font-style:italic; color:darkred">{NameChild}</a> tirou: </strong><a style="color:darkred">{DrawnName}</a></p>
+        <p><strong>E a pessoa quer ganhar: </strong>{Description}</p>
+    </div>
 
     <p><strong>Data do sorteio: </strong>{Date}</p>
 

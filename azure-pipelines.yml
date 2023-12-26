@@ -1,26 +1,40 @@
-# ASP.NET
-# Build and test ASP.NET projects.
-# Add steps that publish symbols, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
+# Define quando o pipeline será acionado. 
+# Neste caso, o pipeline será acionado sempre que houver uma mudança no branch main.
 trigger:
 - main
 
-pool:
-  vmImage: 'windows-latest'
+# Especifica o nome do agente (agent pool) onde os jobs deste pipeline serão executados. 
+pool: occultfriend-dev
 
+# Define variáveis que serão usadas no pipeline.
 variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
+# Inicio da definição dos passos do pipeline.
 steps:
+
 - task: NuGetToolInstaller@1
 
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
 
+# Execucao dos testes unitarios
+- task: DotNetCoreCLI@2
+  inputs:
+    command: test
+    projects: '**/*tests/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+    displayName: 'executing tests'
+
+# Compilacao do projeto
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
@@ -28,7 +42,15 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
+# Publicacao do projeto
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: publish
+    publishWebProjects: false
+    projects: 'OccultFriend.Api\OccultFriend.API\OccultFriend.API.csproj'
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'publish artifacts'
