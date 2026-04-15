@@ -1,4 +1,4 @@
-﻿using OccultFriend.Domain.DTO;
+using OccultFriend.Domain.DTO;
 using OccultFriend.Domain.IRepositories;
 using OccultFriend.Service.Interfaces;
 using System;
@@ -11,6 +11,8 @@ namespace OccultFriend.Service.FriendServices
     public class ServicesFriend : IServicesFriend
     {
         #region Attributes
+
+        private const int MaxShuffleAttempts = 10;
 
         readonly Random _random;
         private readonly IEmailService _emailService;
@@ -40,8 +42,7 @@ namespace OccultFriend.Service.FriendServices
         public async Task Draw(bool childWillPlay)
         {
             Friends = _repositoriesFriend.GetAll()
-                    .Select(f =>
-                    new FriendDto
+                    .Select(f => new FriendDto
                     {
                         Name = f.Name,
                         Description = f.Description,
@@ -49,19 +50,26 @@ namespace OccultFriend.Service.FriendServices
                         ImagePath = f.ImagePath
                     }).ToList();
 
-            var emails = Friends.Select(e => e.Email).ToArray();
+            // Captura os e-mails originais antes do embaralhamento para comparação posterior.
+            // Isso evita uma segunda query ao banco e permite validação posicional.
+            var originalEmails = Friends.Select(e => e.Email).ToArray();
 
-            Shuffle(emails);
+            bool ehRepeat;
+            int attempts = 0;
 
-            for (int i = 0; i <= Friends.Count; i++)
+            do
             {
-                foreach (string email in emails)
-                {
-                    Friends[i++].Email = email;
-                }
-            }
+                var emails = (string[])originalEmails.Clone();
+                Shuffle(emails);
 
-            var ehRepeat = ValidationRepeatDrawn();
+                for (int i = 0; i < Friends.Count; i++)
+                    Friends[i].Email = emails[i];
+
+                _friendsRepeateds = null;
+                ehRepeat = ValidationRepeatDrawn(originalEmails);
+                attempts++;
+
+            } while (ehRepeat && attempts < MaxShuffleAttempts);
 
             if (ehRepeat)
                 await _emailService.SendEmailAdminService(FriendsRepeateds);
@@ -72,16 +80,17 @@ namespace OccultFriend.Service.FriendServices
             }
         }
 
-        private void Shuffle<T>(T[] emails)
+        // Fisher-Yates correto: um único número aleatório por iteração no intervalo [0, index).
+        // Garante distribuição uniforme de todas as permutações possíveis.
+        private void Shuffle<T>(T[] array)
         {
-            for (int index = emails.Length; index > 1; index--)
+            for (int index = array.Length; index > 1; index--)
             {
-                int shuffle = MethodRandom(index);
-                int indexRandom = MethodRandom(shuffle); //Embaralha mais uma vez para garantir que não irá repetir o mesmo participante.
+                int indexRandom = MethodRandom(index);
 
-                T email = emails[indexRandom];
-                emails[indexRandom] = emails[index - 1];
-                emails[index - 1] = email;
+                T temp = array[indexRandom];
+                array[indexRandom] = array[index - 1];
+                array[index - 1] = temp;
             }
         }
 
@@ -90,26 +99,30 @@ namespace OccultFriend.Service.FriendServices
             return _random.Next(index);
         }
 
-        private bool ValidationRepeatDrawn()
+        // Valida duas condições independentes:
+        // 1. Auto-sorteio: participante tirou a si mesmo (comparação posicional com originalEmails).
+        // 2. Alvo duplicado: o mesmo participante foi sorteado por mais de uma pessoa.
+        //    Embora matematicamente impossível com permutação pura, a verificação explícita
+        //    garante a integridade independente da ordem de cadastro no banco.
+        private bool ValidationRepeatDrawn(string[] originalEmails)
         {
-            var repeat = false;
-            var friends = _repositoriesFriend.GetAll();
+            var assignedEmails = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var friend in friends)
+            for (int i = 0; i < Friends.Count; i++)
             {
-                var friendRepeat = Friends.First(x => x.Email.Equals(friend.Email));
+                var assignedEmail = Friends[i].Email;
 
-                if (friend.Email.Equals(friendRepeat.Email) && friend.Name.Equals(friendRepeat.Name))
-                {
-                    FriendsRepeateds.Add(friendRepeat);
-                    repeat = true;
-                }
+                if (assignedEmail.Equals(originalEmails[i], StringComparison.OrdinalIgnoreCase))
+                    FriendsRepeateds.Add(Friends[i]);
+
+                if (!assignedEmails.Add(assignedEmail))
+                    FriendsRepeateds.Add(Friends[i]);
             }
 
-            return repeat;
+            return FriendsRepeateds.Any();
         }
 
-        // Foi criado esse método para crianças que não possuem email, criei um email Alternativo para os dois responsáveis.
+        // Foi criado esse método para crianças que não possuem email, criando um email alternativo para os responsáveis.
         // To-Do ---- Ainda terei que implementar melhorias.
         private async Task SendEmailResponsible(bool childWillPlay)
         {
